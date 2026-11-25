@@ -3,6 +3,7 @@ package gov.anzong.androidnga.activity.compose.filter
 import com.alibaba.fastjson2.JSON
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper
 import com.justwen.androidnga.base.network.retrofit.RetrofitServiceKt
+import com.justwen.androidnga.base.network.retrofit.awaitString
 import com.justwent.androidnga.bu.UserManager
 import gov.anzong.androidnga.Utils
 import gov.anzong.androidnga.base.logger.Logger
@@ -73,7 +74,7 @@ class FilterWordModel {
                 "content-length" to "71"
             )
             val result =
-                service.postString(headerMap = headerMap, fieldMap = params)
+                service.postString(headerMap = headerMap, fieldMap = params).awaitString()
             return convertUpdateResult(result)
         }
         return Result.failure(Exception("未知错误"))
@@ -116,7 +117,7 @@ class FilterWordModel {
             params["uid"] = it.userId
             val refererStr = "${Utils.getNGAHost()}nuke.php?func=ucp&uid=${it.userId}"
             val headerMap = mapOf("Referer" to refererStr)
-            return convertEntity(service.postString(headerMap = headerMap, fieldMap = params))
+            return convertEntity(service.postString(headerMap = headerMap, fieldMap = params).awaitString())
         }
         return Result.failure(Exception("用户信息错误，请尝试重新登录"))
     }

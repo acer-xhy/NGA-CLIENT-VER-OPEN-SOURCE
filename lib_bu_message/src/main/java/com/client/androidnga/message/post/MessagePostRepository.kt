@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.JSONObject
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper
 import com.justwen.androidnga.base.network.retrofit.RetrofitServiceKt
+import com.justwen.androidnga.base.network.retrofit.awaitString
 import kotlinx.coroutines.CancellationException
 import java.net.URLEncoder
 
@@ -18,7 +19,7 @@ class MessagePostRepository {
         return try {
             val netService = RetrofitHelper.getInstance()
                 .getService(RetrofitServiceKt::class.java) as RetrofitServiceKt
-            val result = netService.post(queryParamMap, buildBody(data))
+            val result = netService.post(queryParamMap, buildBody(data)).awaitString()
             checkResult(result);
         } catch (e: CancellationException) {
             throw e

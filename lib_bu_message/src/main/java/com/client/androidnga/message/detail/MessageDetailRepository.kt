@@ -7,6 +7,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper
 import com.justwen.androidnga.base.network.retrofit.RetrofitServiceKt
+import com.justwen.androidnga.base.network.retrofit.awaitString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 
@@ -50,7 +51,7 @@ class MessageDetailPagingSource(mid: String) : PagingSource<Int, MessageDetailIt
             val requestParams = HashMap(defaultParam).apply {
                 this["page"] = page.toString()
             }
-            val jsonString = netService.getString(requestParams)
+            val jsonString = netService.getString(requestParams).awaitString()
             val factory = MessageDetailParser()
             var result: LoadResult<Int, MessageDetailItem>? = null
             factory.parse(jsonString).onFailure {

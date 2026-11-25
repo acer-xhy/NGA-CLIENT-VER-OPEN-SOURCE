@@ -5,6 +5,7 @@ import com.client.androidnga.base.network.ApiError
 import com.client.androidnga.base.network.ApiResult
 import com.client.androidnga.base.network.apiSafeCall
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper
+import com.justwen.androidnga.base.network.retrofit.awaitString
 import java.net.URLEncoder
 
 class ProfileRepository {
@@ -20,7 +21,7 @@ class ProfileRepository {
         }
         val service = RetrofitHelper.getInstance().serviceKt
         return apiSafeCall(
-            request = { service.getStringEncoded(paramMap) },
+            request = { service.getStringEncoded(paramMap).awaitString() },
             convert = { parse(it) })
     }
 

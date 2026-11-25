@@ -8,6 +8,7 @@ import androidx.paging.PagingState
 import com.client.androidnga.base.network.apiSafeCall
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper
 import com.justwen.androidnga.base.network.retrofit.RetrofitServiceKt
+import com.justwen.androidnga.base.network.retrofit.awaitString
 import kotlinx.coroutines.flow.Flow
 
 class MessageListRepository {
@@ -40,7 +41,7 @@ class MessagePagingSource : PagingSource<Int, MessageListItem>() {
             this["page"] = page.toString()
         }
         val result = apiSafeCall(
-            request = { netService.getString(requestParams) },
+            request = { netService.getString(requestParams).awaitString() },
             convert = { MessageListParser().parse(it) })
         return result.data?.let {
             val nextKey = if (it.nextPage > 0) page + 1 else null
