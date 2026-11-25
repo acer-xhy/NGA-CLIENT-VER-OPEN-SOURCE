@@ -20,15 +20,11 @@ android {
     compileSdk project.compileSdkVersion
 
     signingConfigs {
-        signingConfig {
-            if (isJenkins()) {
-                storeFile file('../../android19910914.keystore')
-            } else {
-                storeFile file('..\\keystore\\android19910914.keystore')
-            }
-            storePassword '19910914'
-            keyAlias 'android.keystore'
-            keyPassword '19910914'
+        release {
+            keyAlias 'jgw'
+            keyPassword '123456'
+            storeFile file(jks_path)
+            storePassword '123456'
         }
     }
 
@@ -74,7 +70,7 @@ android {
             minifyEnabled true
             proguardFiles 'proguard.cfg'
             zipAlignEnabled true
-            signingConfig signingConfigs.signingConfig
+            signingConfig signingConfigs.release
         }
         debug {
             applicationIdSuffix '.debug'

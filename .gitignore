@@ -13,3 +13,4 @@ gradle.properties
 *.apk
 projectFilesBackup/
 nga_phone_base_3.0/release/
+/keystore/nga.jks
