@@ -8,6 +8,7 @@ plugins {
 android {
     namespace 'com.client.androidnga.account'
     compileSdk project.compileSdkVersion
+    compileSdkMinor project.compileSdkMinor
 
     defaultConfig {
         minSdkVersion project.minSdkVersion

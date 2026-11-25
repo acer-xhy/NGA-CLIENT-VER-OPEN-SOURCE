@@ -50,8 +50,8 @@
     <style name="Theme.AboutActivity" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/material_window_background</item>
         <item name="mal_card_background">@color/material_card_background</item>
-        <item name="mal_toolbarTheme">@style/Theme.Mal.Toolbar.Dark</item>
-        <item name="mal_toolbarPopupTheme">@style/Theme.Mal.Toolbar.Light</item>
+        <item name="mal_toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="mal_toolbarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="mal_color_primary">@color/material_title_color</item>
         <item name="mal_color_secondary">@color/material_sub_title_color</item>
     </style>

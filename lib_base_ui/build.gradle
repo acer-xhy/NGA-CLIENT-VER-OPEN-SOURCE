@@ -6,6 +6,7 @@ plugins {
 android {
     namespace 'com.justwen.androidnga.ui'
     compileSdk project.compileSdkVersion
+    compileSdkMinor project.compileSdkMinor
 
     defaultConfig {
         minSdk project.minSdkVersion

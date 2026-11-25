@@ -1,11 +1,11 @@
 [versions]
-gradle = "9.0.1"
+gradle = "9.5.2"
 kotlin = "2.3.21"
 kotlin-coroutines = "1.10.2"
 fastjson2 = "2.0.59.android8"
 fastjson2-kotlin = "2.0.21.android"
-annotation = "1.10.0"
-material3 = "1.4.0"
+annotation = "1.11.0"
+material3 = "1.5.0"
 # KSP2 独立版本号，2.3.x 系列与 Kotlin 2.3.x 配套
 ksp = "2.3.14"
 

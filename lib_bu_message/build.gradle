@@ -7,6 +7,7 @@ plugins {
 android {
     namespace 'com.client.androidnga.message'
     compileSdk project.compileSdkVersion
+    compileSdkMinor project.compileSdkMinor
 
     defaultConfig {
         minSdkVersion project.minSdkVersion

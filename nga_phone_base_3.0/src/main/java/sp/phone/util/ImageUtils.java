@@ -31,7 +31,7 @@ import java.util.zip.ZipFile;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.base.util.ContextUtils;
-import gov.anzong.androidnga.util.GlideApp;
+import com.bumptech.glide.Glide;
 import sp.phone.common.PhoneConfiguration;
 
 public class ImageUtils {
@@ -302,7 +302,7 @@ public class ImageUtils {
             Bitmap defaultAvatar = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_avatar);
             sDefaultAvatar = new BitmapDrawable(context.getResources(), ImageUtils.toRoundCorner(defaultAvatar, 2));
         }
-        GlideApp.with(ContextUtils.getContext())
+        Glide.with(ContextUtils.getContext())
                 .load(url)
                 .placeholder(sDefaultAvatar)
                 .circleCrop()
@@ -326,7 +326,7 @@ public class ImageUtils {
             Bitmap defaultAvatar = BitmapFactory.decodeResource(context.getResources(), com.client.androidnga.message.R.drawable.default_avatar);
             sDefaultAvatar = new BitmapDrawable(context.getResources(), ImageUtils.toRoundCorner(defaultAvatar, 2));
         }
-        GlideApp.with(ContextUtils.getContext())
+        Glide.with(ContextUtils.getContext())
                 .load(url)
                 .placeholder(sDefaultAvatar)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)

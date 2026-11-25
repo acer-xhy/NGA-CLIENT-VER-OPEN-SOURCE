@@ -6,6 +6,7 @@ android {
     namespace 'gov.anzong.androidnga.common'
 
     compileSdk project.compileSdkVersion
+    compileSdkMinor 1
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -35,18 +36,18 @@ android {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 
     implementation "com.google.android.material:material:$androidx_material_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
 
-    api 'com.github.tbruyelle:rxpermissions:0.10.2'
+    api 'com.vanniktech:rxpermission:0.11.0'
     api "io.reactivex.rxjava2:rxjava:$rxjava_version"
     implementation 'me.imid.swipebacklayout.lib:library:1.1.0'
     implementation 'net.steamcrafted:load-toast:1.0.12'
-    implementation 'com.github.GrenderG:Toasty:1.4.1'
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
     api('com.zhouyou:signseekbar:1.0.6') {
         exclude group: 'com.android.support'
     }
@@ -58,15 +59,15 @@ dependencies {
 
     api "io.reactivex.rxjava2:rxandroid:$project.rxAndroid"
 
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.22.0'
 
-    api("com.google.guava:guava:29.0-android")
+    api("com.google.guava:guava:33.8.0-android")
 
     // kotlin
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
     //retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
 
     //noinspection KtxExtensionAvailable
     implementation "androidx.preference:preference:$preference_version"

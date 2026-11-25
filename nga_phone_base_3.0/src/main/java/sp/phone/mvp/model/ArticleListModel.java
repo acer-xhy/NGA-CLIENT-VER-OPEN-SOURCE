@@ -6,7 +6,7 @@ import com.client.androidnga.core.parse.ForumParsekUtils;
 import com.client.androidnga.core.parse.ThreadInfoAppParse;
 import com.client.androidnga.core.parse.ThreadInfoHtmlParse;
 import com.client.androidnga.core.parse.ThreadInfoParse;
-import com.trello.rxlifecycle2.android.FragmentEvent;
+import com.trello.rxlifecycle3.android.FragmentEvent;
 
 import org.apache.commons.io.FileUtils;
 

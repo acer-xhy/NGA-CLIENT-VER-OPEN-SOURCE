@@ -24,7 +24,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.justwen.androidnga.base.activity.ARouterConstants;
-import com.trello.rxlifecycle2.android.FragmentEvent;
+import com.trello.rxlifecycle3.android.FragmentEvent;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.Utils;

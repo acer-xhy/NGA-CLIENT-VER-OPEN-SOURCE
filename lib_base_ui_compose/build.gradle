@@ -6,6 +6,7 @@ plugins {
 android {
     namespace 'com.justwen.androidnga.ui.compose'
     compileSdk project.compileSdkVersion
+    compileSdkMinor project.compileSdkMinor
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -35,18 +36,20 @@ dependencies {
     api "androidx.activity:activity-compose:$compose_activity_version"
     // 显式对齐 fragment 版本：否则编译类路径会解析到 fragment 1.0.0，
     // 其 FragmentActivity 不继承 ComponentActivity，导致 enableEdgeToEdge() 无法解析
-    api 'androidx.fragment:fragment:1.3.6'
+    api 'androidx.fragment:fragment:1.9.1'
     api "androidx.compose.ui:ui:$compose_ui_version"
     api "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
     api "androidx.compose.material:material:$compose_version"
+    // 图标库自 1.7.8 起从 material 中剥离并停止更新（官方冻结），单列出来供各模块使用
+    api "androidx.compose.material:material-icons-core:1.7.8"
     debugApi "androidx.compose.ui:ui-tooling:$compose_ui_version"
     implementation 'com.alibaba:arouter-api:1.5.2'
 
-    api "io.coil-kt:coil-compose:2.5.0"
+    api "io.coil-kt:coil-compose:2.7.0"
 
     api "androidx.compose.runtime:runtime-livedata:$compose_version"
 
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.16.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.36.0"
     // paging
     implementation "androidx.paging:paging-compose:$paging_version"
 
@@ -54,8 +57,8 @@ dependencies {
     implementation project(':lib_base_common')
 
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 
     implementation libs.material3
 }

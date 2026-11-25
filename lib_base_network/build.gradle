@@ -5,6 +5,7 @@ plugins {
 android {
     namespace 'com.client.androidnga.base.network'
     compileSdk project.compileSdkVersion
+    compileSdkMinor project.compileSdkMinor
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
@@ -33,14 +34,13 @@ dependencies {
     // 用 api 暴露：RetrofitServiceKt 的公开签名里含 retrofit2.Call，消费模块编译期需要它
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation "com.squareup.retrofit2:retrofit-converters:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation project(':lib_base_common')
 
     implementation project(':lib_base_logger')
 
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.22.0'
 
     // 协程：RetrofitServiceKt 的 Call -> suspend 桥接（awaitString）需要 suspendCancellableCoroutine
     implementation libs.kotlin.coroutines.core
