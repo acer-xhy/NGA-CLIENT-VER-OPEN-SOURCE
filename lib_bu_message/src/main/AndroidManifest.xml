@@ -3,17 +3,17 @@
 
     <application>
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name="com.client.androidnga.message.list.MessageListActivity"
             android:exported="false"
             android:label="@string/label_activity_message_list" />
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".detail.MessageDetailActivity"
             android:exported="false"
             android:label="@string/label_activity_message_detail" />
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".post.MessagePostActivity"
             android:exported="false" />
 

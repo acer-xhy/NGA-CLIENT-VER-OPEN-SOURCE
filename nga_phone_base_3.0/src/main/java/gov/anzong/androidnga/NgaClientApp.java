@@ -1,6 +1,9 @@
 package gov.anzong.androidnga;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.os.Process;
 import android.webkit.WebView;
 
@@ -35,6 +38,7 @@ public class NgaClientApp extends Application {
 
     @Override
     public void onCreate() {
+        applyPortraitOnly();
         ContextUtils.setApplication(this);
         initLogger();
         PreferenceUtils.transfer(this);
@@ -55,6 +59,46 @@ public class NgaClientApp extends Application {
         Logger.setBuildDebugMode(BuildConfig.DEBUG);
         Logger.d(TAG, "app nga android start");
         NLog.setDebug(BuildConfig.DEBUG);
+    }
+
+    /**
+     * 全应用强制竖屏，禁止跟随系统旋转成横屏。
+     * 主机制：各模块 AndroidManifest 里每个 activity 都已声明 screenOrientation="portrait"；
+     * 这里再兜一层运行时约束，保证后续新增的、或被三方清单合并进来的 Activity 同样锁定竖屏。
+     */
+    private void applyPortraitOnly() {
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                if (activity.getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+            }
+        });
     }
 
     private void fixWebViewMultiProcessException() {

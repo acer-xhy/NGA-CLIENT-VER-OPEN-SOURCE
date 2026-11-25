@@ -30,7 +30,12 @@
         tools:ignore="AllowBackup"
         tools:replace="android:label">
         <meta-data android:name="EasyGoClient" android:value="true" />
-        <activity
+        <!-- Android 16(API 36) 起，大屏设备（smallestWidth >= 600dp）会忽略 activity 的屏幕方向锁定。
+             声明该协议属性后仍按 portrait 锁定，避免平板/折叠屏上被系统强制拉到横屏。 -->
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
+        <activity android:screenOrientation="portrait"
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize|locale|screenLayout|smallestScreenSize"
             android:label="@string/app_name"
@@ -49,24 +54,24 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.ProfileActivity" />
-        <activity
+        <activity android:screenOrientation="portrait" android:name=".activity.ProfileActivity" />
+        <activity android:screenOrientation="portrait"
             android:name=".activity.PostActivity"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.AvatarPostActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.SignPostActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.SettingsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/menu_setting"
             android:launchMode="singleTop" />
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.TopicListActivity"
             android:configChanges="orientation|screenSize|locale|screenLayout|smallestScreenSize"
             android:exported="true">
@@ -119,7 +124,7 @@
             </intent-filter>
         </activity>
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.ArticleListActivity"
             android:configChanges="orientation|screenSize|locale|screenLayout|smallestScreenSize"
             android:exported="true">
@@ -168,22 +173,22 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".gallery.ImageZoomActivity" />
-        <activity android:name=".activity.RecentNotificationActivity" />
-        <activity android:name=".activity.LauncherSubActivity" />
+        <activity android:screenOrientation="portrait" android:name=".gallery.ImageZoomActivity" />
+        <activity android:screenOrientation="portrait" android:name=".activity.RecentNotificationActivity" />
+        <activity android:screenOrientation="portrait" android:name=".activity.LauncherSubActivity" />
 
-        <activity android:name=".activity.compose.TemplateComposeActivity" />
+        <activity android:screenOrientation="portrait" android:name=".activity.compose.TemplateComposeActivity" />
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.compose.SearchActivity"
             android:label="@string/search" />
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".activity.AboutActivity"
             android:label="@string/title_about" />
 
-        <activity android:name=".activity.TopicCacheActivity" android:label="我的缓存" />
-        <activity android:name=".activity.ArticleCacheActivity" />
+        <activity android:screenOrientation="portrait" android:name=".activity.TopicCacheActivity" android:label="我的缓存" />
+        <activity android:screenOrientation="portrait" android:name=".activity.ArticleCacheActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

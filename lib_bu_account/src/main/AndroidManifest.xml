@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name="com.justwent.androidnga.bu.login.LoginActivity"
             android:exported="false"
             android:label="登录" />
 
-        <activity
+        <activity android:screenOrientation="portrait"
             android:name=".profile.ProfileActivity"
             android:exported="false" />
 
