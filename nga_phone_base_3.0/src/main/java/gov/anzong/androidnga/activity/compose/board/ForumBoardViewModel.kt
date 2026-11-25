@@ -26,11 +26,11 @@ object ForumBoardViewModel : ViewModel() {
 
     init {
         boardLiveData.postValue(forumBoardModel.loadBoardData())
-        bookmarkSizeLiveData.postValue(forumBoardModel.bookmarkBoard.children?.size)
+        bookmarkSizeLiveData.postValue(forumBoardModel.bookmarkBoard.children?.size ?: 0)
     }
 
-    fun getBoardData(index: Int = 0): BoardEntity {
-        return boardLiveData.value!![index]
+    fun getBoardData(index: Int = 0): BoardEntity? {
+        return boardLiveData.value?.getOrNull(index)
     }
 
     fun addBookmarkBoard(name: String, fid: Int, stid: Int, head: String? = null) {

@@ -1,6 +1,5 @@
 package gov.anzong.androidnga.activity.compose.board
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.justwen.androidnga.ui.compose.widget.TabLayoutWithPager
-import com.justwent.androidnga.bu.UserManager
 import gov.anzong.androidnga.R
 import gov.anzong.androidnga.base.util.ContextUtils
 import gov.anzong.androidnga.core.board.data.BoardEntity
@@ -45,7 +43,7 @@ fun ForumBoardView(forumBoardViewModel: ForumBoardViewModel) {
         it.forEach {
             tabs.add(it.name)
         }
-        val initialPage = if (forumBoardViewModel.bookmarkSizeLiveData.value!! > 0) 0 else 1
+        val initialPage = if ((forumBoardViewModel.bookmarkSizeLiveData.value ?: 0) > 0) 0 else 1
         TabLayoutWithPager(tabs = tabs, initialPage = initialPage) {
             ForumBoardContent(it, forumBoardViewModel)
         }
@@ -53,7 +51,7 @@ fun ForumBoardView(forumBoardViewModel: ForumBoardViewModel) {
 }
 
 @Composable
-fun ForumBoardGroupView(board: BoardEntity, context: Context = ContextUtils.getContext()) {
+fun ForumBoardGroupView(board: BoardEntity) {
     Row(modifier = Modifier.padding(16.dp)) {
         Image(
             modifier = Modifier.size(24.dp),
@@ -63,7 +61,7 @@ fun ForumBoardGroupView(board: BoardEntity, context: Context = ContextUtils.getC
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = board.name,
-            color = Color(context.resources.getColor(R.color.text_color, null)),
+            color = colorResource(id = R.color.text_color),
         )
     }
 }
@@ -71,8 +69,7 @@ fun ForumBoardGroupView(board: BoardEntity, context: Context = ContextUtils.getC
 @Composable
 private fun ForumBoardGridItemView(
     child: BoardEntity,
-    forumBoardViewModel: ForumBoardViewModel,
-    context: Context = ContextUtils.getContext()
+    forumBoardViewModel: ForumBoardViewModel
 ) {
     val paddingValue = 4.dp
     val imageSize = 48.dp
@@ -109,7 +106,7 @@ private fun ForumBoardGridItemView(
         Text(
             modifier = Modifier
                 .padding(top = paddingValue, bottom = paddingValue),
-            color = Color(context.resources.getColor(R.color.text_color, null)),
+            color = colorResource(id = R.color.text_color),
             text = child.name
         )
         Spacer(modifier = Modifier.height(paddingValue))
@@ -137,36 +134,36 @@ fun ForumBoardBookmarkContent(bookmark: BoardEntity, forumBoardViewModel: ForumB
     val bookmarkSize by forumBoardViewModel.bookmarkSizeLiveData.observeAsState()
     val maxColumn = 3
 
-    Column (Modifier.fillMaxSize()) {
-
-        if (UserManager.getUserList().size == 1) {
-            Text(modifier = Modifier.padding(8.dp), text = "建议登录多个账号，可有效改善跳转系统浏览器问题")
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(maxColumn),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 8.dp, end = 8.dp)
+    ) {
+        val children = bookmark.children.orEmpty()
+        items(minOf(bookmarkSize ?: children.size, children.size)) { index ->
+            ForumBoardGridItemView(children[index], forumBoardViewModel)
         }
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(maxColumn),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 8.dp, end = 8.dp)
-        ) {
-            items(bookmarkSize!!) { index ->
-                ForumBoardGridItemView(bookmark.children!![index], forumBoardViewModel)
-            }
-            item(span = { GridItemSpan(maxColumn) }) {
-                val paddingValues = WindowInsets.navigationBars.asPaddingValues()
-                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
-            }
+        item(span = { GridItemSpan(maxColumn) }) {
+            val paddingValues = WindowInsets.navigationBars.asPaddingValues()
+            Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
         }
     }
 }
 
 @Composable
 fun ForumBoardContent(index: Int, forumBoardViewModel: ForumBoardViewModel) {
-    val boardData = forumBoardViewModel.getBoardData(index)
+    val boardData = forumBoardViewModel.getBoardData(index) ?: return
     if (boardData.type == BoardEntity.BoardType.BOOKMARK) {
         ForumBoardBookmarkContent(boardData, forumBoardViewModel)
     } else {
-        val boardList: List<BoardEntity> = forumBoardViewModel.getBoardData(index).children!!
+        // 历史版本可能把扁平化列表写进 board_list.json，读回后普通板块的 children 为 null，
+        // 这里不能再依赖 !!（否则切换 tab 直接 NPE 崩溃）。
+        val boardList: List<BoardEntity> = boardData.children.orEmpty()
+        if (boardList.isEmpty()) {
+            Text(modifier = Modifier.padding(16.dp), text = "该分区暂无板块数据")
+            return
+        }
         val maxColumn = 3
         LazyVerticalGrid(
             columns = GridCells.Fixed(maxColumn),
