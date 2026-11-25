@@ -26,9 +26,6 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.justwen.androidnga.base.activity.ARouterConstants;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.Utils;
 import gov.anzong.androidnga.activity.fragment.ForumWebFragment;
@@ -57,19 +54,16 @@ import sp.phone.view.behavior.ScrollAwareFamBehavior;
 
 public class ArticleTabFragment extends BaseRxFragment {
 
-    @BindView(R.id.pager)
     public ViewPager mViewPager;
 
     private ArticlePagerAdapter mPagerAdapter;
 
     private ArticleListParam mRequestParam;
 
-    @BindView(R.id.tabs)
     public TabLayoutEx mTabLayout;
 
     private static final String GOTO_TAG = "goto";
 
-    @BindView(R.id.fab_menu)
     public FloatingActionsMenu mFam;
 
     private int mReplyCount;
@@ -109,7 +103,11 @@ public class ArticleTabFragment extends BaseRxFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
+        mViewPager = view.findViewById(R.id.pager);
+        mTabLayout = view.findViewById(R.id.tabs);
+        mFam = view.findViewById(R.id.fab_menu);
+        view.findViewById(R.id.fab_post).setOnClickListener(v -> reply());
+        view.findViewById(R.id.fab_refresh).setOnClickListener(v -> refresh());
         updateFloatingMenu();
         mPagerAdapter = new ArticlePagerAdapter(getChildFragmentManager(), mRequestParam);
         mViewPager.setAdapter(mPagerAdapter);
@@ -150,7 +148,6 @@ public class ArticleTabFragment extends BaseRxFragment {
         super.onResume();
     }
 
-    @OnClick(R.id.fab_post)
     public void reply() {
         Intent intent = new Intent();
         String tid = String.valueOf(mRequestParam.tid);
@@ -166,7 +163,6 @@ public class ArticleTabFragment extends BaseRxFragment {
         getActivity().startActivityForResult(intent, ActivityUtils.REQUEST_CODE_TOPIC_POST);
     }
 
-    @OnClick(R.id.fab_refresh)
     public void refresh() {
         getActivityViewModel().setRefreshPage(mViewPager.getCurrentItem() + 1);
         mRequestParam.page = mViewPager.getCurrentItem() + 1;
@@ -175,38 +171,30 @@ public class ArticleTabFragment extends BaseRxFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_add_bookmark:
-                BookmarkTask.execute(mRequestParam.tid);
-                break;
-            case R.id.menu_goto_floor:
-                createGotoDialog();
-                break;
-            case R.id.menu_share:
-                share();
-                break;
-            case R.id.menu_copy_url:
-                copyUrl();
-                break;
-            case R.id.menu_nightmode:
-                ThemeManager.getInstance().setNightMode(true);
-                break;
-            case R.id.menu_daymode:
-                ThemeManager.getInstance().setNightMode(false);
-                break;
-            case R.id.menu_download:
-                mRequestParam.page = mViewPager.getCurrentItem() + 1;
-                getActivityViewModel().setCachePage(mRequestParam.page);
-                break;
-            case R.id.menu_open_by_browser:
-                ARouterUtils.build(ARouterConstants.ACTIVITY_FRAGMENT_TEMPLATE)
-                        .withString("url", getCurrentUrl())
-                        .withString("title", mRequestParam.title)
-                        .withString("fragment", ForumWebFragment.class.getName())
-                        .navigation(getContext());
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_add_bookmark) {
+            BookmarkTask.execute(mRequestParam.tid);
+        } else if (itemId == R.id.menu_goto_floor) {
+            createGotoDialog();
+        } else if (itemId == R.id.menu_share) {
+            share();
+        } else if (itemId == R.id.menu_copy_url) {
+            copyUrl();
+        } else if (itemId == R.id.menu_nightmode) {
+            ThemeManager.getInstance().setNightMode(true);
+        } else if (itemId == R.id.menu_daymode) {
+            ThemeManager.getInstance().setNightMode(false);
+        } else if (itemId == R.id.menu_download) {
+            mRequestParam.page = mViewPager.getCurrentItem() + 1;
+            getActivityViewModel().setCachePage(mRequestParam.page);
+        } else if (itemId == R.id.menu_open_by_browser) {
+            ARouterUtils.build(ARouterConstants.ACTIVITY_FRAGMENT_TEMPLATE)
+                    .withString("url", getCurrentUrl())
+                    .withString("title", mRequestParam.title)
+                    .withString("fragment", ForumWebFragment.class.getName())
+                    .navigation(getContext());
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

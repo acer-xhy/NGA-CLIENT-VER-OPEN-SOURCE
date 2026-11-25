@@ -13,17 +13,13 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import gov.anzong.androidnga.R;
 import sp.phone.util.ActivityUtils;
 
 public class GotoDialogFragment extends NoframeDialogFragment {
 
-    @BindView(R.id.numberPicker)
     public NumberPicker mNumberPicker;
 
-    @BindView(R.id.radioGroup)
     public RadioGroup mRadioGroup;
 
     private int mMaxFloor;
@@ -64,7 +60,8 @@ public class GotoDialogFragment extends NoframeDialogFragment {
 
     private View getDialogView() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_page_picker, null, false);
-        ButterKnife.bind(this, view);
+        mNumberPicker = view.findViewById(R.id.numberPicker);
+        mRadioGroup = view.findViewById(R.id.radioGroup);
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {

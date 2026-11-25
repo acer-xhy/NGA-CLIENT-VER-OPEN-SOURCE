@@ -18,8 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.alibaba.fastjson2.JSON;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.BaseActivity;
 import gov.anzong.androidnga.arouter.ARouterConstants;
@@ -54,13 +52,10 @@ public class TopicSearchFragment extends BaseFragment implements View.OnClickLis
 
     protected TopicListInfo mTopicListInfo;
 
-    @BindView(R.id.swipe_refresh)
     public SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @BindView(R.id.list)
     public RecyclerViewEx mListView;
 
-    @BindView(R.id.loading_view)
     public View mLoadingView;
 
     protected TopicListPresenter mPresenter;
@@ -123,7 +118,9 @@ public class TopicSearchFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        mListView = view.findViewById(R.id.list);
+        mLoadingView = view.findViewById(R.id.loading_view);
         ((BaseActivity) getActivity()).setupToolbar();
 
         if (mRequestParam.searchPost > 0) {

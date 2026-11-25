@@ -19,8 +19,6 @@ import com.alibaba.android.arouter.launcher.ARouter;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.appbar.AppBarLayout;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.LauncherSubActivity;
 import gov.anzong.androidnga.arouter.ARouterConstants;
@@ -37,13 +35,10 @@ public class TopicListFragment extends TopicSearchFragment {
 
     private Menu mOptionMenu;
 
-    @BindView(R.id.fab_menu)
     public FloatingActionsMenu mFam;
 
-    @BindView(R.id.appbar)
     public AppBarLayout mAppBarLayout;
 
-    @BindView(R.id.toolbar)
     public Toolbar mToolbar;
 
     @Override
@@ -70,6 +65,11 @@ public class TopicListFragment extends TopicSearchFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        mFam = view.findViewById(R.id.fab_menu);
+        mAppBarLayout = view.findViewById(R.id.appbar);
+        mToolbar = view.findViewById(R.id.toolbar);
+        view.findViewById(R.id.fab_refresh).setOnClickListener(v -> refresh());
+        view.findViewById(R.id.fab_post).setOnClickListener(v -> startPostActivity());
         super.onViewCreated(view, savedInstanceState);
         updateFloatingMenu();
     }
@@ -104,13 +104,11 @@ public class TopicListFragment extends TopicSearchFragment {
         super.onResume();
     }
 
-    @OnClick(R.id.fab_refresh)
     public void refresh() {
         mFam.collapse();
         mPresenter.loadPage(1, mRequestParam);
     }
 
-    @OnClick(R.id.fab_post)
     public void startPostActivity() {
         ARouter.getInstance()
                 .build(ARouterConstants.ACTIVITY_POST)
@@ -155,27 +153,23 @@ public class TopicListFragment extends TopicSearchFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_add_bookmark:
-                mPresenter.addBookmarkBoard();
-                item.setVisible(false);
-                mOptionMenu.findItem(R.id.menu_remove_bookmark).setVisible(true);
-                ToastUtils.showToast(R.string.toast_add_bookmark_board);
-                break;
-            case R.id.menu_remove_bookmark:
-                mPresenter.removeBookmarkBoard(mRequestParam.fid, mRequestParam.stid);
-                item.setVisible(false);
-                mOptionMenu.findItem(R.id.menu_add_bookmark).setVisible(true);
-                ToastUtils.showToast(R.string.toast_remove_bookmark_board);
-                break;
-            case R.id.menu_sub_board:
-                showSubBoardList();
-                break;
-            case R.id.menu_board_head:
-                mPresenter.startArticleActivity(mRequestParam.boardHead, mRequestParam.title + " - 版头");
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_add_bookmark) {
+            mPresenter.addBookmarkBoard();
+            item.setVisible(false);
+            mOptionMenu.findItem(R.id.menu_remove_bookmark).setVisible(true);
+            ToastUtils.showToast(R.string.toast_add_bookmark_board);
+        } else if (itemId == R.id.menu_remove_bookmark) {
+            mPresenter.removeBookmarkBoard(mRequestParam.fid, mRequestParam.stid);
+            item.setVisible(false);
+            mOptionMenu.findItem(R.id.menu_add_bookmark).setVisible(true);
+            ToastUtils.showToast(R.string.toast_remove_bookmark_board);
+        } else if (itemId == R.id.menu_sub_board) {
+            showSubBoardList();
+        } else if (itemId == R.id.menu_board_head) {
+            mPresenter.startArticleActivity(mRequestParam.boardHead, mRequestParam.title + " - 版头");
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

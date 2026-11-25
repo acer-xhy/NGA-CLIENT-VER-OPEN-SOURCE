@@ -116,27 +116,22 @@ public class TopicListActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.menu_favorite:
-                ActivityUtils.startFavoriteTopicActivity(this);
-                break;
-            case R.id.menu_recommend:
-                showRecommendTopicList();
-                break;
-            case R.id.menu_twenty_four:
-                showTwentyFourList();
-                break;
-            case R.id.menu_search:
-                ARouter.getInstance()
-                        .build(ARouterConstants.ACTIVITY_SEARCH)
-                        .withInt("fid", mRequestParam.fid)
-                        .navigation(this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.menu_favorite) {
+            ActivityUtils.startFavoriteTopicActivity(this);
+        } else if (itemId == R.id.menu_recommend) {
+            showRecommendTopicList();
+        } else if (itemId == R.id.menu_twenty_four) {
+            showTwentyFourList();
+        } else if (itemId == R.id.menu_search) {
+            ARouter.getInstance()
+                    .build(ARouterConstants.ACTIVITY_SEARCH)
+                    .withInt("fid", mRequestParam.fid)
+                    .navigation(this);
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

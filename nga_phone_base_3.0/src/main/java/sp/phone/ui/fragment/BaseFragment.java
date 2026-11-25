@@ -121,12 +121,10 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_history:
-                ActivityUtils.startHistoryTopicActivity(getContext());
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menu_history) {
+            ActivityUtils.startHistoryTopicActivity(getContext());
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

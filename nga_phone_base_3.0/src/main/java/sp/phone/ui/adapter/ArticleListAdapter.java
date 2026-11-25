@@ -21,8 +21,6 @@ import com.alibaba.android.arouter.launcher.ARouter;
 
 import java.text.MessageFormat;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.arouter.ARouterConstants;
 import gov.anzong.androidnga.base.util.ContextUtils;
@@ -218,53 +216,52 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
     public class ArticleViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tv_nickName)
         TextView nickNameTV;
 
         LocalWebView contentTV;
 
-        @BindView(R.id.wv_container)
         FrameLayout contentContainer;
 
-        @BindView(R.id.tv_floor)
         TextView floorTv;
 
-        @BindView(R.id.tv_post_time)
         TextView postTimeTv;
 
-        @BindView(R.id.iv_support)
         ImageView supportBtn;
 
-        @BindView(R.id.iv_oppose)
         ImageView opposeBtn;
 
-        @BindView(R.id.iv_reply)
         ImageView replyBtn;
 
-        @BindView(R.id.iv_avatar)
         ImageView avatarIv;
 
-        @BindView(R.id.iv_client)
         ImageView clientIv;
 
-        @BindView(R.id.tv_score)
         TextView scoreTv;
 
-        @BindView(R.id.iv_more)
         ImageView menuIv;
 
-        @BindView(R.id.fl_avatar)
         FrameLayout avatarPanel;
 
-        @BindView(R.id.tv_detail)
         TextView detailTv;
 
-        @BindView(R.id.tv_content)
         TextView contentTextView;
 
         public ArticleViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            nickNameTV = itemView.findViewById(R.id.tv_nickName);
+            contentContainer = itemView.findViewById(R.id.wv_container);
+            floorTv = itemView.findViewById(R.id.tv_floor);
+            postTimeTv = itemView.findViewById(R.id.tv_post_time);
+            supportBtn = itemView.findViewById(R.id.iv_support);
+            opposeBtn = itemView.findViewById(R.id.iv_oppose);
+            replyBtn = itemView.findViewById(R.id.iv_reply);
+            avatarIv = itemView.findViewById(R.id.iv_avatar);
+            clientIv = itemView.findViewById(R.id.iv_client);
+            scoreTv = itemView.findViewById(R.id.tv_score);
+            menuIv = itemView.findViewById(R.id.iv_more);
+            avatarPanel = itemView.findViewById(R.id.fl_avatar);
+            detailTv = itemView.findViewById(R.id.tv_detail);
+            contentTextView = itemView.findViewById(R.id.tv_content);
         }
     }
 

@@ -16,8 +16,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.BaseActivity;
 import gov.anzong.androidnga.arouter.ARouterConstants;
@@ -51,13 +49,10 @@ public class ArticleListFragment extends BaseMvpFragment<ArticleListPresenter> i
 
     private static final String TAG = ArticleListFragment.class.getSimpleName();
 
-    @BindView(R.id.list)
     public RecyclerViewEx mListView;
 
-    @BindView(R.id.loading_view)
     public View mLoadingView;
 
-    @BindView(R.id.swipe_refresh)
     public SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ArticleListAdapter mArticleAdapter;
@@ -88,62 +83,49 @@ public class ArticleListFragment extends BaseMvpFragment<ArticleListPresenter> i
             String tidStr = String.valueOf(row.tid);
             int tid = row.tid;
 
-            switch (item.getItemId()) {
-                case R.id.menu_edit:
-                    if (mThreadRowInfo.isComment) {
-                        showToast(R.string.cannot_eidt_comment);
-                        break;
-                    } else {
-                        ARouter.getInstance()
-                                .build(ARouterConstants.ACTIVITY_POST)
-                                .withString(ParamKey.KEY_PID, pidStr)
-                                .withString(ParamKey.KEY_TID, tidStr)
-                                .withString("title", StringUtils.unEscapeHtml(row.subject))
-                                .withString("action", "modify")
-                                .withString("prefix", StringUtils.unEscapeHtml(StringUtils.removeBrTag(row.rawContent)))
-                                .navigation(getActivity(), ActivityUtils.REQUEST_CODE_LOGIN);
-                    }
-                    break;
-                case R.id.menu_post_comment:
-                    mPresenter.postComment(mRequestParam, row);
-                    break;
-                case R.id.menu_report:
-                    FunctionUtils.handleReport(row, mRequestParam.tid, getFragmentManager());
-                    break;
-                case R.id.menu_signature:
-                    if (row.isAnonymous) {
-                        ActivityUtils.showToast("这白痴匿名了,神马都看不到");
-                    } else {
-                        FunctionUtils.Create_Signature_Dialog(row, getActivity(),
-                                mListView);
-                    }
-                    break;
-                case R.id.menu_vote:
-                    FunctionUtils.createVoteDialog(row, getActivity(), mListView, mToast);
-                    break;
-                case R.id.menu_ban_this_one:
-                    mPresenter.banThisSB(row);
-                    break;
-                case R.id.menu_show_this_person_only:
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_edit) {
+                if (mThreadRowInfo.isComment) {
+                    showToast(R.string.cannot_eidt_comment);
+                } else {
                     ARouter.getInstance()
-                            .build(ARouterConstants.ACTIVITY_TOPIC_CONTENT)
-                            .withString("tab", "1")
-                            .withInt(ParamKey.KEY_TID, tid)
-                            .withInt(ParamKey.KEY_AUTHOR_ID, row.authorId)
-                            .withInt("fromreplyactivity", 1)
-                            .navigation();
-                    break;
-                case R.id.menu_support:
-                    mPresenter.postSupportTask(tid, row.pid);
-                    break;
-                case R.id.menu_oppose:
-                    mPresenter.postOpposeTask(tid, row.pid);
-                    break;
-                case R.id.menu_favorite:
-                    BookmarkTask.execute(tidStr, pidStr);
-                    break;
-                default:
-                    break;
+                            .build(ARouterConstants.ACTIVITY_POST)
+                            .withString(ParamKey.KEY_PID, pidStr)
+                            .withString(ParamKey.KEY_TID, tidStr)
+                            .withString("title", StringUtils.unEscapeHtml(row.subject))
+                            .withString("action", "modify")
+                            .withString("prefix", StringUtils.unEscapeHtml(StringUtils.removeBrTag(row.rawContent)))
+                            .navigation(getActivity(), ActivityUtils.REQUEST_CODE_LOGIN);
+                }
+            } else if (itemId == R.id.menu_post_comment) {
+                mPresenter.postComment(mRequestParam, row);
+            } else if (itemId == R.id.menu_report) {
+                FunctionUtils.handleReport(row, mRequestParam.tid, getFragmentManager());
+            } else if (itemId == R.id.menu_signature) {
+                if (row.isAnonymous) {
+                    ActivityUtils.showToast("这白痴匿名了,神马都看不到");
+                } else {
+                    FunctionUtils.Create_Signature_Dialog(row, getActivity(),
+                            mListView);
+                }
+            } else if (itemId == R.id.menu_vote) {
+                FunctionUtils.createVoteDialog(row, getActivity(), mListView, mToast);
+            } else if (itemId == R.id.menu_ban_this_one) {
+                mPresenter.banThisSB(row);
+            } else if (itemId == R.id.menu_show_this_person_only) {
+                ARouter.getInstance()
+                        .build(ARouterConstants.ACTIVITY_TOPIC_CONTENT)
+                        .withString("tab", "1")
+                        .withInt(ParamKey.KEY_TID, tid)
+                        .withInt(ParamKey.KEY_AUTHOR_ID, row.authorId)
+                        .withInt("fromreplyactivity", 1)
+                        .navigation();
+            } else if (itemId == R.id.menu_support) {
+                mPresenter.postSupportTask(tid, row.pid);
+            } else if (itemId == R.id.menu_oppose) {
+                mPresenter.postOpposeTask(tid, row.pid);
+            } else if (itemId == R.id.menu_favorite) {
+                BookmarkTask.execute(tidStr, pidStr);
             }
             return false;
         }
@@ -263,7 +245,9 @@ public class ArticleListFragment extends BaseMvpFragment<ArticleListPresenter> i
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
+        mListView = view.findViewById(R.id.list);
+        mLoadingView = view.findViewById(R.id.loading_view);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         ((BaseActivity) getActivity()).setupToolbar();
         mArticleAdapter = new ArticleListAdapter(getContext(),getActivity().getSupportFragmentManager());
         mArticleAdapter.setSupportListener(mSupportListener);

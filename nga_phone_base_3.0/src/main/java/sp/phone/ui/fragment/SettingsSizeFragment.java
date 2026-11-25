@@ -98,32 +98,22 @@ public class SettingsSizeFragment extends BaseFragment implements  SignSeekBar.O
 
     @Override
     public void onProgressChanged(SignSeekBar signSeekBar, int progress, float progressFloat, boolean fromUser) {
-        switch (signSeekBar.getId()) {
-            case R.id.seek_web_size:
-                mWebView.getSettings().setTextZoom(progress);
-                break;
-            default:
-                break;
+        if (signSeekBar.getId() == R.id.seek_web_size) {
+            mWebView.getSettings().setTextZoom(progress);
         }
     }
 
     @Override
     public void getProgressOnActionUp(SignSeekBar signSeekBar, int progress, float progressFloat) {
-        switch (signSeekBar.getId()) {
-            case R.id.seek_topic_title:
-                mConfiguration.setTopicTitleSize(progress);
-                break;
-            case R.id.seek_avatar:
-                mConfiguration.setAvatarSize(progress);
-                break;
-            case R.id.seek_emoticon:
-                mConfiguration.setEmoticonSize(progress);
-                break;
-            case R.id.seek_web_size:
-                mConfiguration.setWebViewTextZoom(progress);
-                break;
-            default:
-                break;
+        int id = signSeekBar.getId();
+        if (id == R.id.seek_topic_title) {
+            mConfiguration.setTopicTitleSize(progress);
+        } else if (id == R.id.seek_avatar) {
+            mConfiguration.setAvatarSize(progress);
+        } else if (id == R.id.seek_emoticon) {
+            mConfiguration.setEmoticonSize(progress);
+        } else if (id == R.id.seek_web_size) {
+            mConfiguration.setWebViewTextZoom(progress);
         }
     }
 

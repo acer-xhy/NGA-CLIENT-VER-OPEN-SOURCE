@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
+    alias(libs.plugins.android.legacy.kapt)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -79,26 +78,43 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         abortOnError false
-        disable 'MissingTranslation'
-    }
-    kotlinOptions {
-        jvmTarget = '17'
+        disable.add('MissingTranslation')
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+}
 
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            if (outputFile != null && outputFileName.endsWith('.apk') && variant.buildType.name == "release") {
-                outputFileName = "nga_phone_${defaultConfig.versionName}_${getDate()}.apk"
+// AGP 9 已移除 applicationVariants.outputFileName 的改写能力，
+// 改为在 assembleRelease 结束后按原有规则给产物改名
+tasks.matching { it.name == 'assembleRelease' }.configureEach {
+    finalizedBy 'renameReleaseApk'
+}
+
+tasks.register('renameReleaseApk') {
+    doLast {
+        def apkDir = layout.buildDirectory.dir('outputs/apk/release').get().asFile
+        if (!apkDir.isDirectory()) {
+            return
+        }
+        def datedName = "nga_phone_${project.appVersionName}_${getDate()}.apk"
+        apkDir.listFiles()?.each { f ->
+            if (f.isFile() && f.name.endsWith('-release.apk')) {
+                def target = new File(apkDir, datedName)
+                if (target.exists()) {
+                    target.delete()
+                }
+                if (!f.renameTo(target)) {
+                    logger.warn("rename ${f.name} -> ${target.name} failed")
+                }
             }
         }
     }
@@ -121,12 +137,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
-    //butterKnife
-    implementation 'com.jakewharton:butterknife:10.2.1'
+    // compose 相关（AGP 9 下 R 字段不再是常量，ButterKnife 已全量移除）
     implementation 'androidx.compose.material3:material3-android:1.3.2'
     implementation 'androidx.compose.animation:animation-android:1.6.8'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
-    kapt 'com.jakewharton:butterknife-compiler:10.2.1'
 
     //compose
     implementation "androidx.activity:activity-compose:$compose_activity_version"

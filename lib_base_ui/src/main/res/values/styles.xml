@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- lib_base_ui 自己的 AppBar overlay 主题，避免引用 app 模块的 AppTheme.* -->
+    <style name="BaseAppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="BaseAppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+</resources>

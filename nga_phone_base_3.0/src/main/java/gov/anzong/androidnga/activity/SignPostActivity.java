@@ -73,12 +73,10 @@ public class SignPostActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.send:
-                postSign();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.send) {
+            postSign();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

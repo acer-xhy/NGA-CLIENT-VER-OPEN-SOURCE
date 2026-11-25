@@ -73,15 +73,13 @@ public class TopicCacheFragment extends TopicSearchFragment implements View.OnLo
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_cache_export:
-                mPresenter.exportCacheTopic(this);
-                break;
-            case R.id.menu_cache_import:
-                mPresenter.showFileChooser(this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_cache_export) {
+            mPresenter.exportCacheTopic(this);
+        } else if (itemId == R.id.menu_cache_import) {
+            mPresenter.showFileChooser(this);
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

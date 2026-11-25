@@ -92,22 +92,20 @@ public class RecentNotificationFragment extends BaseRxFragment implements OnHttp
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.delete_all:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(this.getString(R.string.delete_recentreply_confirm_text))
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mNotificationTask.clearAllNotification();
-                                mNotificationAdapter.setRecentReplyList(null);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null);
-                builder.create().show();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.delete_all) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(this.getString(R.string.delete_recentreply_confirm_text))
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mNotificationTask.clearAllNotification();
+                            mNotificationAdapter.setRecentReplyList(null);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null);
+            builder.create().show();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

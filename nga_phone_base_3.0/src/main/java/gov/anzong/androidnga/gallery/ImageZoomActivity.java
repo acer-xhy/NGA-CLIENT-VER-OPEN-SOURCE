@@ -138,33 +138,30 @@ public class ImageZoomActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_share:
-                if (mDownloadResults.length == 0) {
-                    CloudServerManager.putCrashData(this, "mCurrentUrl", mCurrentUrl);
-                }
-                if (mDownloadResults[mPageIndex] != null) {
-                    share(mDownloadResults[mPageIndex].file);
-                } else {
-                    saveBitmap(data -> {
-                        for (int i = 0; i < mGalleryUrls.length; i++) {
-                            if (mGalleryUrls[i].equals(data.url)) {
-                                mDownloadResults[i] = data;
-                                break;
-                            }
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_share) {
+            if (mDownloadResults.length == 0) {
+                CloudServerManager.putCrashData(this, "mCurrentUrl", mCurrentUrl);
+            }
+            if (mDownloadResults[mPageIndex] != null) {
+                share(mDownloadResults[mPageIndex].file);
+            } else {
+                saveBitmap(data -> {
+                    for (int i = 0; i < mGalleryUrls.length; i++) {
+                        if (mGalleryUrls[i].equals(data.url)) {
+                            mDownloadResults[i] = data;
+                            break;
                         }
-                        share(data.file);
-                    }, mGalleryUrls[mPageIndex]);
-                }
-                break;
-            case R.id.menu_download_all:
-                showDownloadAllDialog();
-                break;
-            case R.id.menu_download:
-                saveBitmap(mGalleryUrls[mPageIndex]);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+                    }
+                    share(data.file);
+                }, mGalleryUrls[mPageIndex]);
+            }
+        } else if (itemId == R.id.menu_download_all) {
+            showDownloadAllDialog();
+        } else if (itemId == R.id.menu_download) {
+            saveBitmap(mGalleryUrls[mPageIndex]);
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

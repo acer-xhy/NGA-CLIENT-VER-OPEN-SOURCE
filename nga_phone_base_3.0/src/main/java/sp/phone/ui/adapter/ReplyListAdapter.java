@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import gov.anzong.androidnga.R;
 import com.client.androidnga.core.data.model.ThreadPageInfo;
 import sp.phone.theme.ThemeManager;
@@ -78,21 +76,20 @@ public class ReplyListAdapter extends BaseAppendableAdapter<ThreadPageInfo, Repl
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tv_action)
         public TextView mActionTv;
 
-        @BindView(R.id.tv_content)
         public TextView mContentTv;
 
-        @BindView(R.id.tv_time)
         public TextView mPostDateTv;
 
-        @BindView(R.id.tv_topic)
         public TextView mSubjectTv;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mActionTv = itemView.findViewById(R.id.tv_action);
+            mContentTv = itemView.findViewById(R.id.tv_content);
+            mPostDateTv = itemView.findViewById(R.id.tv_time);
+            mSubjectTv = itemView.findViewById(R.id.tv_topic);
         }
     }
 

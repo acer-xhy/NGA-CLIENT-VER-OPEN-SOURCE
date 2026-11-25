@@ -14,3 +14,9 @@ gradle.properties
 projectFilesBackup/
 nga_phone_base_3.0/release/
 /keystore/nga.jks
+
+# Kotlin / Gradle 构建产物
+/.kotlin
+# JVM 崩溃/回放日志
+hs_err_pid*.log
+replay_pid*.log
