@@ -150,7 +150,7 @@ dependencies {
 
     //glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    // kapt 已覆盖 Java + Kotlin 源码，原本并存的 annotationProcessor 是重复处理（javac 那轮白跑）
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
     // retrofit
@@ -165,7 +165,7 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
     implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.1.0'
     implementation "com.alibaba:arouter-api:$arouter_version"
-    annotationProcessor "com.alibaba:arouter-compiler:$arouter_version"
+    // 同上：kapt 覆盖 Java + Kotlin，不再重复挂 javac 注解处理器
     kapt "com.alibaba:arouter-compiler:$arouter_version"
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
     implementation 'com.github.daniel-stoneuk:material-about-library:2.3.0'
@@ -184,10 +184,8 @@ dependencies {
 
     implementation project(':lib_module_debug')
 
-    // database
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    // database：app 模块本身没有 Room 实体/DAO（Room 相关代码集中在 lib_bu_account），
+    // 这里原本还挂着 room-compiler 的 javac+kapt 两套处理器，属于无用的空转，已移除
 
     // kotlin
     implementation "androidx.core:core-ktx:$core_ktx_version"

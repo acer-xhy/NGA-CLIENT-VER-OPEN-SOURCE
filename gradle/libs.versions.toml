@@ -6,11 +6,14 @@ fastjson2 = "2.0.59.android8"
 fastjson2-kotlin = "2.0.21.android"
 annotation = "1.10.0"
 material3 = "1.4.0"
+# KSP2 独立版本号，2.3.x 系列与 Kotlin 2.3.x 配套
+ksp = "2.3.14"
 
 [plugins]
 # AGP 9 内置 Kotlin，不再需要 kotlin-android 插件；kapt 改用 com.android.legacy-kapt
 android-legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "gradle" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 
 [libraries]

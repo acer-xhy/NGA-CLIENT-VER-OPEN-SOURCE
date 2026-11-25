@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     alias(libs.plugins.android.legacy.kapt)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -54,8 +55,8 @@ dependencies {
     implementation project(':lib_core')
     implementation project(':lib_core_data')
 
-    // database
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    // database：Room 已迁到 KSP（kapt 只剩 ARouter），KSP 可直接处理 Java 的 Entity/DAO/Database。
+    // room-runtime 用 api：AppDatabase 继承 RoomDatabase，类型要暴露给 app 的 javac 编译
+    api "androidx.room:room-runtime:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
 }
