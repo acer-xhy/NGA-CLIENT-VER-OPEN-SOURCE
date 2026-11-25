@@ -7,9 +7,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 
 import org.apache.commons.io.IOUtils;
 
@@ -22,10 +21,9 @@ import java.net.URL;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.Utils;
 import gov.anzong.androidnga.base.util.ToastUtils;
-import sp.phone.util.ImageUtils;
 import sp.phone.util.ActivityUtils;
 import sp.phone.util.ImageUtils;
-import sp.phone.util.NLog;
+import gov.anzong.androidnga.common.util.NLog;
 import sp.phone.util.StringUtils;
 
 public class AvatarFileUploadTask extends AsyncTask<String, Integer, String> {

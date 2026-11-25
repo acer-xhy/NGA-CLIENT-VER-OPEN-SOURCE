@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
 import gov.anzong.androidnga.Utils;
 import sp.phone.common.PhoneConfiguration;
 import sp.phone.param.HttpPostClient;
-import sp.phone.util.NLog;
+import gov.anzong.androidnga.common.util.NLog;
 
 /**
  * Created by Justwen on 2017/6/6.
@@ -24,9 +24,9 @@ public class TopicPostTask extends AsyncTask<String, Integer, String> {
 
     private static final String LOG_TAG = TopicPostTask.class.getSimpleName();
 
-    private final String result_start_tag = "<span style='color:#aaa'>&gt;</span>";
+    private final String result_start_tag = "<title>";
 
-    private final String result_end_tag = "<br/>";
+    private final String result_end_tag = "</title>";
 
     private String mReplyUrl = Utils.getNGAHost() + "post.php?";
 

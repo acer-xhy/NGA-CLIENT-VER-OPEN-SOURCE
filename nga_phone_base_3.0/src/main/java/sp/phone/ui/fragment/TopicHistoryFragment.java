@@ -2,11 +2,6 @@ package sp.phone.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +9,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.alibaba.fastjson.JSON;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.alibaba.fastjson2.JSON;
 
 import java.util.List;
 
@@ -22,13 +23,13 @@ import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.base.util.ContextUtils;
 import gov.anzong.androidnga.base.widget.DividerItemDecorationEx;
 import gov.anzong.androidnga.common.ui.dialog.ConfirmDialog;
-import sp.phone.ui.adapter.TopicListAdapter;
-import sp.phone.common.TopicHistoryManager;
-import sp.phone.mvp.model.entity.ThreadPageInfo;
-import sp.phone.mvp.model.entity.TopicListInfo;
 import sp.phone.common.PhoneConfiguration;
+import sp.phone.common.TopicHistoryManager;
+import com.client.androidnga.core.data.model.ThreadPageInfo;
+import sp.phone.mvp.model.entity.TopicListInfo;
 import sp.phone.param.ArticleListParam;
 import sp.phone.param.ParamKey;
+import sp.phone.ui.adapter.TopicListAdapter;
 import sp.phone.view.RecyclerViewEx;
 
 /**

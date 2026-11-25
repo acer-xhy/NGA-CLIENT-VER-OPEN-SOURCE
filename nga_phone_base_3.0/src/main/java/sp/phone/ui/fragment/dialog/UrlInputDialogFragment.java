@@ -1,18 +1,20 @@
 package sp.phone.ui.fragment.dialog;
 
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.Locale;
 
@@ -82,10 +84,13 @@ public class UrlInputDialogFragment extends BaseDialogFragment {
 
         ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboardManager != null && clipboardManager.hasPrimaryClip()) {
-            CharSequence clipData = clipboardManager.getPrimaryClip().getItemAt(0).getText();
-            if (!TextUtils.isEmpty(clipData)) {
-                mUrlAddEditText.setText(clipData);
-                mUrlAddEditText.selectAll();
+            ClipData clipData = clipboardManager.getPrimaryClip();
+            if (clipData != null) {
+                CharSequence clipText = clipData.getItemAt(0).getText();
+                if (!TextUtils.isEmpty(clipText)) {
+                    mUrlAddEditText.setText(clipText);
+                    mUrlAddEditText.selectAll();
+                }
             }
         }
 

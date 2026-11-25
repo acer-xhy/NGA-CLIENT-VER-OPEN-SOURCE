@@ -3,7 +3,6 @@ package sp.phone.view.webview;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,8 +18,8 @@ import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.ArticleListActivity;
 import gov.anzong.androidnga.activity.TopicListActivity;
 import gov.anzong.androidnga.arouter.ARouterConstants;
+import gov.anzong.androidnga.base.util.ContextUtils;
 import gov.anzong.androidnga.gallery.ImageZoomActivity;
-import gov.anzong.androidnga.base.util.ContextUtils;;
 import sp.phone.util.StringUtils;
 
 public class WebViewClientEx extends WebViewClient {
@@ -31,7 +30,7 @@ public class WebViewClientEx extends WebViewClient {
     private static final String NGA_USER_PROFILE_END = "&";
 
     private static final String[] SUFFIX_IMAGE = {
-            ".gif", ".jpg", ".png", ".jpeg", ".bmp"
+            ".gif", ".jpg", ".png", ".jpeg", ".bmp", ".webp"
     };
 
     private static final String NGA_READ = "/read.php?";
@@ -47,7 +46,7 @@ public class WebViewClientEx extends WebViewClient {
     private static String[] NGA_USER_PROFILE_START;
 
     static {
-        String[] domains = ContextUtils.getContext().getResources().getStringArray(R.array.nga_domain_no_http);
+        String[] domains = ContextUtils.getContext().getResources().getStringArray(gov.anzong.androidnga.common.R.array.nga_domain_no_http);
         sThreadPrefix = new String[domains.length];
         sReadPrefix = new String[domains.length];
         NGA_USER_PROFILE_START = new String[domains.length];

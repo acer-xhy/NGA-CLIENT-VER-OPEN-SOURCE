@@ -1,9 +1,10 @@
 package gov.anzong.androidnga.activity;
 
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
-import android.view.View;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +34,10 @@ public class ArticleCacheActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setToolbarEnabled(true);
         mRequestParam = getIntent().getParcelableExtra(ParamKey.KEY_PARAM);
+        if (mRequestParam == null) {
+            finish();
+            return;
+        }
         setTitle(mRequestParam.title);
         super.onCreate(savedInstanceState);
         loadCachePageList(String.valueOf(mRequestParam.tid));

@@ -5,9 +5,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 
-import sp.phone.ui.adapter.ActionBarUserListAdapter;
 import sp.phone.common.UserManager;
 import sp.phone.common.UserManagerImpl;
+import sp.phone.ui.adapter.ActionBarUserListAdapter;
 
 /**
  * Created by Justwen on 2018/1/15.
@@ -47,7 +47,7 @@ public class ActionBarUserListSpinner extends androidx.appcompat.widget.AppCompa
 
     @Override
     protected void onFinishInflate() {
-        if (mUserManager.getActiveUser() != null) {
+        if (UserManagerImpl.getInstance().hasValidUser()) {
             setSelection(mUserManager.getActiveUserIndex());
         }
         super.onFinishInflate();

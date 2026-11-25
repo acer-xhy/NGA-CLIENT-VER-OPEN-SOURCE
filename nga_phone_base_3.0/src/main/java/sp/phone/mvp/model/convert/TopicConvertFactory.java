@@ -2,27 +2,23 @@ package sp.phone.mvp.model.convert;
 
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import sp.phone.common.FilterKeyword;
-import sp.phone.common.FilterKeywordsManager;
-import sp.phone.common.FilterKeywordsManagerImpl;
+import gov.anzong.androidnga.activity.compose.filter.FilterManager;
 import sp.phone.common.PhoneConfiguration;
-import sp.phone.common.User;
-import sp.phone.common.UserManagerImpl;
 import sp.phone.http.bean.TopicListBean;
 import sp.phone.mvp.model.entity.SubBoard;
-import sp.phone.mvp.model.entity.ThreadPageInfo;
+import com.client.androidnga.core.data.model.ThreadPageInfo;
 import sp.phone.mvp.model.entity.TopicListInfo;
-import sp.phone.util.ForumUtils;
-import sp.phone.util.NLog;
+import gov.anzong.androidnga.common.util.ForumUtils;
+import gov.anzong.androidnga.common.util.NLog;
 import sp.phone.util.StringUtils;
 
 /**
@@ -39,6 +35,9 @@ public class TopicConvertFactory {
             js = js.substring("window.script_muti_get_var_store=".length());
         }
 
+        // 去掉 jdata 字段，值可能包含转义引号、\x5C 等非法转义导致解析失败，且该字段无实际用途
+        js = js.replaceAll("(?s)\"jdata\"\\s*:\\s*(\"\"|\"\\{.*?\\}\")\\s*,?\\s*", "");
+
         TopicListBean topicListBean = JSON.parseObject(js, TopicListBean.class);
 
         try {
@@ -50,7 +49,7 @@ public class TopicConvertFactory {
             sort(listInfo);
             filter(listInfo);
             return listInfo;
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             NLog.e(TAG, "can not parse :\n" + js);
             return null;
         }
@@ -79,32 +78,9 @@ public class TopicConvertFactory {
 //                }).collect(Collectors.toList())
 //               );
 
-        Iterator<ThreadPageInfo> iterator = data.getThreadPageList().iterator();
 
-        List<User> blackList = UserManagerImpl.getInstance().getBlackList();
-        List<FilterKeyword> filterKeywords = FilterKeywordsManagerImpl.getInstance().getKeywords();
+        FilterManager.INSTANCE.filterTopic(data.getThreadPageList());
 
-        while (iterator.hasNext()) {
-            ThreadPageInfo pageInfo = iterator.next();
-            boolean removed = false;
-            for (FilterKeyword keyword : filterKeywords) {
-                if (keyword.isEnabled() && pageInfo.getSubject().contains(keyword.getKeyword())) {
-                    iterator.remove();
-                    removed = true;
-                    break;
-                }
-            }
-            if (removed) {
-                continue;
-            }
-            for (User user : blackList) {
-                if (Objects.equals(pageInfo.getAuthor(), user.getNickName())) {
-                    iterator.remove();
-                    break;
-                }
-            }
-
-        }
     }
 
     private void sort(TopicListInfo listInfo) {
@@ -188,8 +164,8 @@ public class TopicConvertFactory {
                 pageInfo.setAnonymity(true);
                 pageInfo.setAuthor(getAnonymityName(tBean.getAuthor()));
             } else if (!TextUtils.isEmpty(authorId) && authorId.startsWith("#anony_")) {
-                pageInfo.setAnonymity(true);
-                pageInfo.setAuthor(getAnonymityName(authorId));
+                    pageInfo.setAnonymity(true);
+                    pageInfo.setAuthor(getAnonymityName(authorId));
             } else {
                 pageInfo.setAuthorId(Integer.parseInt(authorId));
                 pageInfo.setAuthor(tBean.getAuthor());
@@ -220,9 +196,14 @@ public class TopicConvertFactory {
                 pageInfo.setReplyInfo(replyInfo);
             }
 
-            Map<String, String> parent = tBean.getParent();
-            if (parent != null) {
-                pageInfo.setBoard(parent.get("2"));
+            String parent = tBean.parent;
+            if (!TextUtils.isEmpty(parent)) {
+                try {
+                    JSONObject obj = JSON.parseObject(parent);
+                    pageInfo.setBoard(Objects.requireNonNull(obj.get("2")).toString());
+                } catch (Exception e) {
+                    // ignore
+                }
             }
 
             pageInfo.setPostDate(tBean.getPostdate());

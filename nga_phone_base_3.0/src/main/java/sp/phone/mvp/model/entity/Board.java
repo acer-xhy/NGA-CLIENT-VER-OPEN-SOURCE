@@ -2,9 +2,12 @@ package sp.phone.mvp.model.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
-public class Board implements Parcelable {
+import gov.anzong.androidnga.common.base.JavaBean;
+
+public class Board implements Parcelable, JavaBean {
 
     private int mFid;
 
@@ -16,7 +19,7 @@ public class Board implements Parcelable {
 
     private String mBoardHead;
 
-    public static class BoardKey implements Parcelable {
+    public static class BoardKey implements Parcelable, JavaBean {
 
         int fid;
 

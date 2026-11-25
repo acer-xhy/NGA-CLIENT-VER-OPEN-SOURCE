@@ -3,14 +3,11 @@ package sp.phone.ui.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
-import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceGroup;
 
 import com.bumptech.glide.Glide;
 
@@ -22,16 +19,15 @@ import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.BaseActivity;
 import gov.anzong.androidnga.activity.LauncherSubActivity;
 import gov.anzong.androidnga.activity.SettingsActivity;
+import gov.anzong.androidnga.activity.compose.TemplateComposeActivity;
 import gov.anzong.androidnga.base.util.ContextUtils;
 import gov.anzong.androidnga.base.util.ThreadUtils;
 import gov.anzong.androidnga.base.util.ToastUtils;
 import gov.anzong.androidnga.common.PreferenceKey;
 import gov.anzong.androidnga.ui.fragment.BasePreferenceFragment;
 import sp.phone.common.UserManagerImpl;
-import sp.phone.http.retrofit.RetrofitHelper;
 import sp.phone.theme.ThemeManager;
 import sp.phone.ui.fragment.dialog.AlertDialogFragment;
-import sp.phone.view.webview.WebViewEx;
 
 public class SettingsFragment extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener {
 
@@ -42,21 +38,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         configPreference();
     }
 
-    private void mapping(PreferenceGroup group) {
-        for (int i = 0; i < group.getPreferenceCount(); i++) {
-            Preference preference = group.getPreference(i);
-            preference.setIconSpaceReserved(false);
-            if (preference instanceof PreferenceGroup) {
-                mapping((PreferenceGroup) preference);
-            } else {
-                preference.setOnPreferenceChangeListener(this);
-//                if (preference instanceof ListPreference) {
-//                    preference.setSummary(((ListPreference) preference).getEntry());
-//                }
-            }
-        }
-    }
-
     private void configPreference() {
         findPreference(PreferenceKey.NIGHT_MODE).setEnabled(!ThemeManager.getInstance().isNightModeFollowSystem());
         findPreference(PreferenceKey.MATERIAL_THEME).setEnabled(!ThemeManager.getInstance().isNightMode());
@@ -65,19 +46,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
             showClearCacheDialog();
             return true;
         });
-
-        EditTextPreference preference = findPreference(PreferenceKey.USER_AGENT);
-        if (preference != null) {
-            preference.setOnPreferenceChangeListener((preference1, newValue) -> {
-                String ua = newValue.toString();
-                if (TextUtils.isEmpty(newValue.toString())) {
-                    ua = WebViewEx.getDefaultUserAgent();
-                }
-                RetrofitHelper.getInstance().setUserAgent(ua);
-                preference.setText(ua);
-                return false;
-            });
-        }
 
     }
 
@@ -144,30 +112,28 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     private void setFullScreen(boolean fullScreen) {
         int flag;
         if (fullScreen) {
-            flag = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            flag = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
         }
-        getActivity().getWindow().addFlags(flag);
+
     }
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        switch (preference.getKey()) {
-            case PreferenceKey.ADJUST_SIZE:
-            case PreferenceKey.PREF_USER:
-            case PreferenceKey.PREF_BLACK_LIST:
-            case "pref_keyword":
-                Intent intent = new Intent(getActivity(), LauncherSubActivity.class);
-                intent.putExtra("fragment", preference.getFragment());
-                startActivity(intent);
-                break;
-            default:
-                return super.onPreferenceTreeClick(preference);
-
+        Intent intent;
+        if (preference.getFragment() != null && (preference.getFragment().contains("compose") || preference.getKey() != null && preference.getKey().contains("compose"))) {
+            intent = new Intent(getActivity(), TemplateComposeActivity.class);
+            intent.putExtra("fragment", preference.getFragment());
+            startActivity(intent);
+            return true;
+        } else if (preference.getFragment() != null) {
+            intent = new Intent(getActivity(), LauncherSubActivity.class);
+            intent.putExtra("fragment", preference.getFragment());
+            startActivity(intent);
+            return true;
         }
-        return true;
+        return super.onPreferenceTreeClick(preference);
     }
 
 }

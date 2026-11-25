@@ -5,23 +5,27 @@ import android.os.Process;
 import android.webkit.WebView;
 
 import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.network.retrofit.RetrofitHelper;
 import com.justwen.androidnga.cloud.CloudServerManager;
+import com.justwent.androidnga.bu.UserManager;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
+import gov.anzong.androidnga.activity.compose.board.ForumBoardViewModel;
+import gov.anzong.androidnga.base.logger.Logger;
 import gov.anzong.androidnga.base.util.ContextUtils;
 import gov.anzong.androidnga.base.util.PreferenceUtils;
 import gov.anzong.androidnga.base.util.ThreadUtils;
 import gov.anzong.androidnga.common.PreferenceKey;
+import gov.anzong.androidnga.common.util.NLog;
 import gov.anzong.androidnga.common.util.ReflectUtils;
 import gov.anzong.androidnga.db.AppDatabase;
-import sp.phone.common.FilterKeywordsManagerImpl;
 import sp.phone.common.UserManagerImpl;
 import sp.phone.common.VersionUpgradeHelper;
-import sp.phone.util.NLog;
+import sp.phone.task.CheckInTask;
 
 public class NgaClientApp extends Application {
 
@@ -31,19 +35,26 @@ public class NgaClientApp extends Application {
 
     @Override
     public void onCreate() {
-        NLog.w(TAG, "app nga android start");
         ContextUtils.setApplication(this);
+        initLogger();
         PreferenceUtils.transfer(this);
         checkNewVersion();
         VersionUpgradeHelper.upgrade();
         AppDatabase.init(this);
         initCoreModule();
         initRouter();
+        checkIn();
         super.onCreate();
 
         // fixWebViewMultiProcessException();
         CloudServerManager.init(this);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandlerProxy(Thread.getDefaultUncaughtExceptionHandler()));
+    }
+
+    private void initLogger() {
+        Logger.setBuildDebugMode(BuildConfig.DEBUG);
+        Logger.d(TAG, "app nga android start");
+        NLog.setDebug(BuildConfig.DEBUG);
     }
 
     private void fixWebViewMultiProcessException() {
@@ -58,7 +69,7 @@ public class NgaClientApp extends Application {
             if (dirs != null) {
                 for (File dir : dirs) {
                     if (dir.getName().contains("webview")) {
-                        if (!dir.getName().contains("webview_" + ppid)){
+                        if (!dir.getName().contains("webview_" + ppid)) {
                             ThreadUtils.postOnSubThread(() -> {
                                 try {
                                     FileUtils.deleteDirectory(dir);
@@ -89,10 +100,21 @@ public class NgaClientApp extends Application {
 
     private void initCoreModule() {
         UserManagerImpl.getInstance().initialize(this);
-        FilterKeywordsManagerImpl.getInstance().initialize(this);
+        UserManager.INSTANCE.getActiveUser();
+        RetrofitHelper.setCookieProvider(() -> UserManagerImpl.getInstance().getCookie());
 //        // 注册crashHandler
 //        CrashHandler.getInstance().init(this);
+        initCoreModuleAsync();
 
+    }
+
+    private void initCoreModuleAsync() {
+        ThreadUtils.postOnSubThread(new Runnable() {
+            @Override
+            public void run() {
+                ForumBoardViewModel.INSTANCE.getBoardLiveData();
+            }
+        });
     }
 
     private void checkNewVersion() {
@@ -103,6 +125,10 @@ public class NgaClientApp extends Application {
             sNewVersion = true;
             PreferenceUtils.putData(PreferenceKey.KEY_WEBVIEW_DATA_INDEX, 0);
         }
+    }
+
+    private void checkIn() {
+        CheckInTask.autoCheckIn(this);
     }
 
     public static boolean isNewVersion() {

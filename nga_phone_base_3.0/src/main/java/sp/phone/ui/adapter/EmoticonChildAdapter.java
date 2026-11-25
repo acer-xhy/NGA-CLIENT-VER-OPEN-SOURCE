@@ -1,23 +1,24 @@
 package sp.phone.ui.adapter;
 
+import static gov.anzong.androidnga.common.util.EmoticonUtils.EMOTICON_LABEL;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Paint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import androidx.recyclerview.widget.RecyclerView;
 import sp.phone.rxjava.RxBus;
 import sp.phone.rxjava.RxEvent;
 import sp.phone.theme.ThemeManager;
@@ -32,6 +33,7 @@ public class EmoticonChildAdapter extends RecyclerView.Adapter<EmoticonChildAdap
 
     private String[] mImageUrls;
 
+    private String[] mEmotionCodes;
     private String mCategoryName;
 
     private int mHeight;
@@ -51,8 +53,9 @@ public class EmoticonChildAdapter extends RecyclerView.Adapter<EmoticonChildAdap
         isNightMode = ThemeManager.getInstance().isNightMode();
     }
 
-    public void setData(String categoryName, String[] urls) {
+    public void setData(String categoryName, String[] urls, String[] codes) {
         mImageUrls = urls;
+        mEmotionCodes = codes;
         mCategoryName = categoryName;
     }
 
@@ -83,7 +86,8 @@ public class EmoticonChildAdapter extends RecyclerView.Adapter<EmoticonChildAdap
                 }
             }
             holder.mEmoticonItem.setImageBitmap(bm);
-            holder.mEmoticonItem.setTag("[img]" + mImageUrls[position] + "[/img]");
+            holder.mEmoticonItem.setTag(mEmotionCodes[position] +
+                    "-" + mCategoryName + "/" + mImageUrls[position]);
         } catch (IOException e) {
             e.printStackTrace();
         }

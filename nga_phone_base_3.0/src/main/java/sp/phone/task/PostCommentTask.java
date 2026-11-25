@@ -1,10 +1,11 @@
 package sp.phone.task;
 
 import android.os.AsyncTask;
+
 import androidx.fragment.app.FragmentActivity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 
 import org.apache.commons.io.IOUtils;
 
@@ -15,7 +16,7 @@ import java.net.HttpURLConnection;
 import gov.anzong.androidnga.Utils;
 import sp.phone.common.PhoneConfiguration;
 import sp.phone.param.HttpPostClient;
-import sp.phone.util.NLog;
+import gov.anzong.androidnga.common.util.NLog;
 import sp.phone.util.StringUtils;
 
 public class PostCommentTask extends AsyncTask<String, Integer, String> {

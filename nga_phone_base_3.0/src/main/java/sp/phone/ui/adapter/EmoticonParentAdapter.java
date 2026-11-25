@@ -1,11 +1,14 @@
 package sp.phone.ui.adapter;
 
+import static gov.anzong.androidnga.common.util.EmoticonUtils.EMOTICON_LABEL;
+
 import android.content.Context;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
 
 import gov.anzong.androidnga.common.util.EmoticonUtils;
 
@@ -32,7 +35,10 @@ public class EmoticonParentAdapter extends PagerAdapter {
         recyclerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         EmoticonChildAdapter adapter = new EmoticonChildAdapter(mContext, mHeight);
-        adapter.setData(EmoticonUtils.EMOTICON_LABEL[position][0], EmoticonUtils.EMOTICON_URL[position]);
+
+        adapter.setData(EMOTICON_LABEL[position][0], getEmotionList(EmoticonUtils.EMOTICON_URL[position], position, 1),
+                getEmotionList(EmoticonUtils.EMOTICON_URL[position], position, 0)
+        );
 
         recyclerView.setAdapter(adapter);
 
@@ -42,7 +48,22 @@ public class EmoticonParentAdapter extends PagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return EmoticonUtils.EMOTICON_LABEL[position][1];
+        return EMOTICON_LABEL[position][1];
+    }
+
+    private String[] getEmotionList(String[][] list, int emotionPosion, int emotionType) {
+        String[] result = new String[list.length];
+        if (emotionType == 0) {
+            for (int i = 0; i < list.length; i++) {
+                result[i] = "[s:" + EmoticonUtils.EMOTICON_LABEL[emotionPosion][0] + ":" + list[i][emotionType] + "]";
+            }
+        } else {
+            for (int i = 0; i < list.length; i++) {
+                result[i] = list[i][emotionType];
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -53,7 +74,7 @@ public class EmoticonParentAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return EmoticonUtils.EMOTICON_LABEL.length;
+        return EMOTICON_LABEL.length;
     }
 
     @Override

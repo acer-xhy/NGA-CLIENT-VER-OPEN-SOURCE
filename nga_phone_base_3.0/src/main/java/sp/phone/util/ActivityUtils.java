@@ -1,21 +1,27 @@
 package sp.phone.util;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
+
+import com.alibaba.android.arouter.launcher.ARouter;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.LauncherSubActivity;
+import gov.anzong.androidnga.arouter.ARouterConstants;
 import gov.anzong.androidnga.base.util.ContextUtils;
 import gov.anzong.androidnga.base.util.ToastUtils;
+import gov.anzong.androidnga.common.util.NLog;
 import sp.phone.common.PhoneConfiguration;
 import sp.phone.common.UserManagerImpl;
 import sp.phone.ui.fragment.TopicHistoryFragment;
@@ -308,12 +314,11 @@ public class ActivityUtils {
     }
 
     public static void startLoginActivity(Context context) {
-        Intent intent = new Intent(context, PhoneConfiguration.getInstance().loginActivityClass);
-        context.startActivity(intent);
+        ARouter.getInstance().build(ARouterConstants.ACTIVITY_LOGIN).navigation((Activity) context, 1);
     }
 
     public static void startFavoriteTopicActivity(Context context) {
-        if (UserManagerImpl.getInstance().getActiveUser() == null) {
+        if (!UserManagerImpl.getInstance().hasValidUser()) {
             startLoginActivity(context);
         } else {
             Intent intent = new Intent(context, PhoneConfiguration.getInstance().topicActivityClass);
@@ -323,7 +328,7 @@ public class ActivityUtils {
     }
 
     public static void startRecommendTopicActivity(Context context, Intent intent) {
-        if (UserManagerImpl.getInstance().getActiveUser() == null) {
+        if (!UserManagerImpl.getInstance().hasValidUser()) {
             startLoginActivity(context);
         } else {
             intent.setClass(context, PhoneConfiguration.getInstance().topicActivityClass);
@@ -332,7 +337,7 @@ public class ActivityUtils {
     }
 
     public static void startTwentyFourActivity(Context context, Intent intent) {
-        if (UserManagerImpl.getInstance().getActiveUser() == null) {
+        if (!UserManagerImpl.getInstance().hasValidUser()) {
             startLoginActivity(context);
         } else {
             intent.setClass(context, PhoneConfiguration.getInstance().topicActivityClass);
@@ -341,7 +346,7 @@ public class ActivityUtils {
     }
 
     public static void startSearchDialog(AppCompatActivity activity, Bundle bundle) {
-        if (UserManagerImpl.getInstance().getActiveUser() == null) {
+        if (!UserManagerImpl.getInstance().hasValidUser()) {
             startLoginActivity(activity);
             return;
         }
