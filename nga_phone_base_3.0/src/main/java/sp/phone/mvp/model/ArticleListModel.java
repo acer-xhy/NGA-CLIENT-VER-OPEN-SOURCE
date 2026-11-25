@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.client.androidnga.core.parse.ForumParsekUtils;
 import com.client.androidnga.core.parse.ThreadInfoAppParse;
+import com.client.androidnga.core.parse.ThreadInfoHtmlParse;
 import com.client.androidnga.core.parse.ThreadInfoParse;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 
@@ -44,6 +45,23 @@ import gov.anzong.androidnga.common.util.NLog;
 public class ArticleListModel extends BaseModel implements ArticleListContract.Model {
 
     private static final String TAG = ArticleListModel.class.getSimpleName();
+
+    /**
+     * 首次请求：__output=8 的 JSON 直出（原生数据，最快）。
+     */
+    private static final int ATTEMPT_JSON = 0;
+
+    /**
+     * 补救请求：JSON 直出被服务端截断时，改取网页（HTML），把网页数据还原成原生数据后再渲染。
+     * 不做重试（截断是服务端行为，重试只会重复拿到同一段残体），也不做截断补齐（会漏数据）。
+     */
+    private static final int ATTEMPT_HTML = 1;
+
+    private static final String HEADER_CONNECTION = "Connection";
+
+    private static final String HEADER_CACHE_CONTROL = "Cache-Control";
+
+    private static final String HEADER_PRAGMA = "Pragma";
 
     private RetrofitService mService;
 
@@ -120,8 +138,36 @@ public class ArticleListModel extends BaseModel implements ArticleListContract.M
 
     @Override
     public void loadPage(ArticleListParam param, Map<String, String> header, OnHttpCallBack<ThreadInfo> callBack) {
-        String url = getUrl(param);
-        mService.get(url, header)
+        loadPageInternal(param, header, callBack, ATTEMPT_JSON);
+    }
+
+    /**
+     * 网页解析的地址：与 JSON 直出同一个 read.php，只是不再要 __output=8（那是 JSON 直出的开关）。
+     */
+    public String getHtmlUrl(ArticleListParam param) {
+        StringBuilder url = new StringBuilder(getAvailableDomain())
+                .append("/read.php?&page=").append(param.page);
+        if (param.tid != 0) {
+            url.append("&tid=").append(param.tid);
+        }
+        if (param.pid != 0) {
+            url.append("&pid=").append(param.pid);
+        }
+        if (param.authorId != 0) {
+            url.append("&authorid=").append(param.authorId);
+        }
+        return url.toString();
+    }
+
+    private void loadPageInternal(final ArticleListParam param, final Map<String, String> header,
+                                  final OnHttpCallBack<ThreadInfo> callBack, final int attempt) {
+        final boolean viaHtml = attempt == ATTEMPT_HTML;
+        final String url = viaHtml ? getHtmlUrl(param) : getUrl(param);
+        final Map<String, String> requestHeader = buildRequestHeader(header, attempt);
+        RetrofitService service = viaHtml
+                ? RetrofitHelper.getInstance().getFreshConnectionService()
+                : mService;
+        service.get(url, requestHeader)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
                 .compose(getLifecycleProvider().<String>bindUntilEvent(FragmentEvent.DETACH))
@@ -129,18 +175,26 @@ public class ArticleListModel extends BaseModel implements ArticleListContract.M
                     @Override
                     public ThreadInfo apply(@NonNull String s) throws Exception {
                         long time = System.currentTimeMillis();
-                        ThreadInfo data = getThreadInfo(s);
-                        NLog.e(TAG, "time = " + (System.currentTimeMillis() - time));
+                        ThreadInfo data = null;
+                        try {
+                            data = viaHtml
+                                    ? ThreadInfoHtmlParse.parse(s, new HtmlConfigService(), param.page, param.tid)
+                                    : ThreadInfoParse.parse(s, new HtmlConfigService());
+                        } catch (Throwable t) {
+                            writeDiag(diagName(viaHtml ? "html_fail" : "fail", param.tid, attempt), url, s, t);
+                        }
+                        NLog.e(TAG, (viaHtml ? "html " : "json ") + "time = " + (System.currentTimeMillis() - time));
                         if (data == null) {
-                            String errorMsg = ForumParsekUtils.parseErrorMsg(s);
+                            writeDiag(diagName(viaHtml ? "html_empty" : "empty", param.tid, attempt), url, s, null);
+                            // JSON 直出可能带着服务端的错误提示（如帖子被删），这种不是截断，不走网页解析
+                            String errorMsg = viaHtml ? null : ForumParsekUtils.parseErrorMsg(s);
                             if (errorMsg != null) {
                                 throw new Exception(errorMsg);
-                            } else {
-                                throw new ServerException("NGA后台抽风了，请尝试右上角菜单中的使用内置浏览器打开");
                             }
-                        } else {
-                            return data;
+                            throw new ServerException("NGA后台抽风了，请尝试右上角菜单中的使用内置浏览器打开");
                         }
+                        writeDiag(diagName(viaHtml ? "html_ok" : "ok", param.tid, attempt), url, s, null);
+                        return data;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -154,9 +208,36 @@ public class ArticleListModel extends BaseModel implements ArticleListContract.M
 
                     @Override
                     public void onError(@NonNull Throwable throwable) {
+                        // 服务端 __output=8 JSON 直出会间歇性截断，且同一时刻网页是完整的：
+                        // 不重试（重试只会拿到同一段残体）、不补齐（会丢数据），直接改走网页解析。
+                        if (!viaHtml && throwable instanceof ServerException) {
+                            writeDiag("html_" + param.tid + "_trigger", url, "switch to html", throwable);
+                            loadPageInternal(param, header, callBack, ATTEMPT_HTML);
+                            return;
+                        }
                         callBack.onError(ErrorConvertFactory.getErrorMessage(throwable), throwable);
                     }
                 });
+    }
+
+    private String diagName(String kind, int tid, int attempt) {
+        return kind + "_" + tid + (attempt == 0 ? "" : "_a" + attempt);
+    }
+
+    /**
+     * 按尝试序号构造请求头：网页补救请求强制新建连接并禁用缓存，避免复用那条已返回残体的连接。
+     */
+    private Map<String, String> buildRequestHeader(Map<String, String> baseHeader, int attempt) {
+        Map<String, String> header = new HashMap<>();
+        if (baseHeader != null) {
+            header.putAll(baseHeader);
+        }
+        if (attempt > 0) {
+            header.put(HEADER_CONNECTION, "close");
+            header.put(HEADER_CACHE_CONTROL, "no-cache, no-store");
+            header.put(HEADER_PRAGMA, "no-cache");
+        }
+        return header;
     }
 
     @Override
@@ -207,6 +288,48 @@ public class ArticleListModel extends BaseModel implements ArticleListContract.M
                         callBack.onError("读取缓存失败！");
                     }
                 });
+    }
+
+    /**
+     * 诊断（样本收集期保留，攒够样本后再删）：把服务端返回原文与解析异常落盘，便于分析"为什么走 WebView 兜底"。
+     * 数据写在应用外部目录 diag/ 下，可直接用 adb 读取；只保留最近 50 个 dump 文件。
+     */
+    private void writeDiag(String name, String url, String body, Throwable t) {
+        try {
+            File diagDir = new File(ContextUtils.getContext().getExternalFilesDir(null), "diag");
+            if (!diagDir.exists() && !diagDir.mkdirs()) {
+                return;
+            }
+            long now = System.currentTimeMillis();
+            StringBuilder sb = new StringBuilder();
+            sb.append("time=").append(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(new java.util.Date(now))).append('\n');
+            sb.append("url=").append(url).append('\n');
+            sb.append("len=").append(body == null ? -1 : body.length()).append('\n');
+            if (t != null) {
+                sb.append("ERR=").append(android.util.Log.getStackTraceString(t)).append('\n');
+            }
+            sb.append(body == null ? "null" : body);
+            FileUtils.write(new File(diagDir, name + "_" + now + ".txt"), sb.toString());
+
+            // 追加一行汇总，便于快速筛选是"截断"还是"服务端报错"
+            String summary = new java.text.SimpleDateFormat("MM-dd HH:mm:ss", java.util.Locale.US).format(new java.util.Date(now))
+                    + " " + name + " len=" + (body == null ? -1 : body.length())
+                    + (t == null ? " OK" : " ERR " + t.getClass().getSimpleName() + ": " + t.getMessage())
+                    + '\n';
+            try (java.io.FileWriter writer = new java.io.FileWriter(new File(diagDir, "summary.log"), true)) {
+                writer.write(summary);
+            }
+
+            File[] files = diagDir.listFiles((dir, n) -> n.endsWith(".txt"));
+            if (files != null && files.length > 50) {
+                java.util.Arrays.sort(files, (a, b) -> Long.compare(a.lastModified(), b.lastModified()));
+                for (int i = 0; i < files.length - 50; i++) {
+                    //noinspection ResultOfMethodCallIgnored
+                    files[i].delete();
+                }
+            }
+        } catch (Throwable ignore) {
+        }
     }
 
     private ThreadInfo getThreadInfo(String js) {

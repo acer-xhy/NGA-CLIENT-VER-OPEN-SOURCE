@@ -28,7 +28,9 @@ object JsonStringConvertFactory : Converter.Factory() {
         override fun convert(responseBody: ResponseBody): String? {
             try {
                 responseBody.byteStream().use { it ->
-                    val body = IOUtils.toString(it, "GBK")
+                    // 服务端 Content-Type 声明 charset=GBK，但正文里会出现 GB18030 的四字节字符
+                    // （用户名、标题）。用 GB18030 解码可以完整还原，GB18030 兼容 GBK。
+                    val body = IOUtils.toString(it, "GB18030")
                     Logger.d(body)
                     return body
                 }
