@@ -42,6 +42,18 @@ allprojects {
 
 }
 
+// release 打包不跑 lintVital。本工程 lint 的 abortOnError 已是 false，
+// 即使扫出致命问题也不会中断构建，但每个模块仍会各跑一遍 lintVitalAnalyzeRelease，
+// 本机实测 13 个模块合计约 233s（占任务耗时第二梯队），属于纯等待。
+// 需要静态检查时显式执行 `gradlew lintRelease`，或直接用 AS 的 Inspect Code。
+subprojects { p ->
+    ['com.android.application', 'com.android.library'].each { pluginId ->
+        p.plugins.withId(pluginId) {
+            p.extensions.getByName('android').lint.checkReleaseBuilds = false
+        }
+    }
+}
+
 tasks.register('clean', Delete) {
     delete rootProject.layout.buildDirectory
 }
