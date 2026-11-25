@@ -309,6 +309,11 @@ public class ArticleListFragment extends BaseMvpFragment<ArticleListPresenter> i
         df.show(getActivity().getSupportFragmentManager());
     }
 
+    @Override
+    public void onLikeResult(int pid, int userValue, String message) {
+        mArticleAdapter.updateScore(pid, userValue, message);
+    }
+
 
     @Override
     public void setRefreshing(boolean refreshing) {

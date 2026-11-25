@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.android.arouter.launcher.ARouter;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.arouter.ARouterConstants;
@@ -44,6 +45,7 @@ import sp.phone.ui.fragment.dialog.BaseDialogFragment;
 import sp.phone.util.ActivityUtils;
 import sp.phone.util.FunctionUtils;
 import sp.phone.util.ImageUtils;
+import sp.phone.util.LikeScoreUtils;
 import sp.phone.util.StringUtils;
 import sp.phone.view.webview.LocalWebView;
 
@@ -274,6 +276,37 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
     public void setData(ThreadInfo data) {
         mData = data;
+    }
+
+    /**
+     * 点赞/踩成功后刷新指定楼层的点赞数。
+     * <p>
+     * 服务端返回的“变化量”是操作人自身推荐状态（赞 +1 / 踩 -1 / 无 0）的变化，
+     * 不等于楼层显示赞数的变化：例如“赞”切“踩”返回 -2，但赞数只应 -1。因此这里用
+     * 操作前/后的自身状态差来算显示值的变化。
+     *
+     * @param pid       楼层 id
+     * @param userValue 服务端返回的自身推荐状态变化量
+     * @param message   服务端提示文案（“表示支持/表示反对/取消…”）
+     */
+    public void updateScore(int pid, int userValue, String message) {
+        if (mData == null || mData.postInfoList == null) {
+            return;
+        }
+        int delta = LikeScoreUtils.resolveScoreDelta(userValue, message);
+        if (delta == 0) {
+            return;
+        }
+        List<ThreadPostInfo> postInfoList = mData.postInfoList;
+        for (int i = 0; i < postInfoList.size(); i++) {
+            ThreadPostInfo postInfo = postInfoList.get(i);
+            if (postInfo.pid == pid) {
+                postInfo.score = Math.max(0, postInfo.score + delta);
+                android.util.Log.i("LikeDiag", "adapter update pid=" + pid + " delta=" + delta + " userValue=" + userValue + " new=" + postInfo.score + " index=" + i);
+                notifyItemChanged(i);
+                return;
+            }
+        }
     }
 
     public void setSupportListener(View.OnClickListener listener) {

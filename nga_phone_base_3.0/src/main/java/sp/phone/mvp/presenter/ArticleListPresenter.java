@@ -252,18 +252,34 @@ public class ArticleListPresenter extends BasePresenter<ArticleListFragment, Art
 
     @Override
     public void postSupportTask(int tid, int pid) {
-        if (mLikeTask == null) {
-            mLikeTask = new LikeTask();
-        }
-        mLikeTask.execute(tid, pid, LikeTask.SUPPORT, ToastUtils::success);
+        postLikeTask(tid, pid, LikeTask.SUPPORT);
     }
 
     @Override
     public void postOpposeTask(int tid, int pid) {
+        postLikeTask(tid, pid, LikeTask.OPPOSE);
+    }
+
+    private void postLikeTask(int tid, int pid, int like) {
         if (mLikeTask == null) {
             mLikeTask = new LikeTask();
         }
-        mLikeTask.execute(tid, pid, LikeTask.OPPOSE, ToastUtils::success);
+        mLikeTask.execute(tid, pid, like, new LikeTask.OnLikeResultListener() {
+            @Override
+            public void onLikeSuccess(int resultPid, int value, String message) {
+                android.util.Log.i("LikeDiag", "presenter success pid=" + resultPid + " value=" + value + " like=" + like);
+                ToastUtils.success(message);
+                // 让列表按服务端返回的状态变化刷新点赞数，避免“点了没变化”
+                if (mBaseView != null) {
+                    mBaseView.onLikeResult(resultPid, value, message);
+                }
+            }
+
+            @Override
+            public void onLikeFailed(int resultPid, String message) {
+                ToastUtils.error(message);
+            }
+        });
     }
 
     @Override

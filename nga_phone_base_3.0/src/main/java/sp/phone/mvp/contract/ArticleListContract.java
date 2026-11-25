@@ -52,6 +52,15 @@ public interface ArticleListContract {
 
         void showPostCommentDialog(String prefix, Bundle bundle);
 
+        /**
+         * 点赞/踩成功后刷新对应楼层点赞数
+         *
+         * @param pid          楼层 id
+         * @param userValue    服务端返回的“自己推荐状态的变化量”（+1 赞、-1 踩或取消、-2 赞转踩等）
+         * @param message      服务端返回的提示文案，用于判断本次操作后的状态
+         */
+        void onLikeResult(int pid, int userValue, String message);
+
     }
 
     interface Model {
@@ -65,3 +74,4 @@ public interface ArticleListContract {
         void loadCachePage(ArticleListParam param, OnHttpCallBack<ThreadInfo> callBack);
     }
 }
+
