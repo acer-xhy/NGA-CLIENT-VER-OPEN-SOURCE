@@ -20,3 +20,5 @@ nga_phone_base_3.0/release/
 # JVM 崩溃/回放日志
 hs_err_pid*.log
 replay_pid*.log
+# 单元测试用的临时登录态（含 Cookie，禁止入库）
+nga_phone_base_3.0/src/test/resources/nga_test_account.properties
