@@ -34,6 +34,12 @@
 
         <SwitchPreference
             android:defaultValue="true"
+            android:key="key_force_portrait"
+            android:summary="关闭后界面跟随系统旋转"
+            android:title="强制竖屏" />
+
+        <SwitchPreference
+            android:defaultValue="true"
             android:key="use_solid_color_bg"
             android:summary="@string/setting_solid_color_bg_summary"
             android:title="@string/setting_solid_color_bg_title" />

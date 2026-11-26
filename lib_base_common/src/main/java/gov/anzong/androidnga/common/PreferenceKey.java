@@ -90,6 +90,8 @@ public class PreferenceKey {
 
     public static final String KEY_CLEAR_CACHE = "key_clear_cache";
 
+    public static final String KEY_FORCE_PORTRAIT = "key_force_portrait";
+
     public static final String KEY_WEBVIEW_TEXT_ZOOM = "key_webview_zoom_size";
 
     public static final String KEY_PRELOAD_BOARD_VERSION = "key_preload_board_version";

@@ -16,6 +16,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import gov.anzong.androidnga.activity.compose.board.ForumBoardViewModel;
 import gov.anzong.androidnga.arouter.ARouterConstants;
@@ -38,9 +40,17 @@ public class NgaClientApp extends Application {
 
     private static boolean sNewVersion;
 
+    private static NgaClientApp sInstance;
+
+    /**
+     * 当前进程内存活的 Activity，切换竖屏开关后需要立刻对它们生效。
+     */
+    private final List<Activity> mActivities = new ArrayList<>();
+
     @Override
     public void onCreate() {
-        applyPortraitOnly();
+        sInstance = this;
+        registerOrientationCallbacks();
         ContextUtils.setApplication(this);
         initLogger();
         PreferenceUtils.transfer(this);
@@ -64,17 +74,16 @@ public class NgaClientApp extends Application {
     }
 
     /**
-     * 全应用强制竖屏，禁止跟随系统旋转成横屏。
-     * 主机制：各模块 AndroidManifest 里每个 activity 都已声明 screenOrientation="portrait"；
-     * 这里再兜一层运行时约束，保证后续新增的、或被三方清单合并进来的 Activity 同样锁定竖屏。
+     * 屏幕方向由设置项「强制竖屏」决定：开启时锁定竖屏，关闭时跟随系统旋转。
+     * 运行时逐个 Activity 设置方向，可覆盖清单里声明的 screenOrientation，
+     * 也能兜住后续新增的、或被三方清单合并进来的 Activity。
      */
-    private void applyPortraitOnly() {
+    private void registerOrientationCallbacks() {
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                if (activity.getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                }
+                mActivities.add(activity);
+                applyOrientation(activity);
             }
 
             @Override
@@ -99,8 +108,35 @@ public class NgaClientApp extends Application {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
+                mActivities.remove(activity);
             }
         });
+    }
+
+    private void applyOrientation(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        boolean forcePortrait = PreferenceUtils.getData(PreferenceKey.KEY_FORCE_PORTRAIT, true);
+        int target = forcePortrait
+                ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                : ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+        if (activity.getRequestedOrientation() != target) {
+            activity.setRequestedOrientation(target);
+        }
+    }
+
+    /**
+     * 设置页切换「强制竖屏」后调用，让已经在前台的页面立即跟随新设置。
+     */
+    public static void applyOrientationSetting() {
+        NgaClientApp app = sInstance;
+        if (app == null) {
+            return;
+        }
+        for (Activity activity : new ArrayList<>(app.mActivities)) {
+            app.applyOrientation(activity);
+        }
     }
 
     private void fixWebViewMultiProcessException() {

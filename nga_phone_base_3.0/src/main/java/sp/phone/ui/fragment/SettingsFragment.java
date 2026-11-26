@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 
+import gov.anzong.androidnga.NgaClientApp;
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.BaseActivity;
 import gov.anzong.androidnga.activity.LauncherSubActivity;
@@ -101,6 +102,10 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                         getActivity().recreate();
                     }
                 }, 200);
+                break;
+            case PreferenceKey.KEY_FORCE_PORTRAIT:
+                // 值在监听器返回后才落盘，延迟到下一轮主线程再按新值刷新方向
+                ThreadUtils.postOnMainThreadDelay(NgaClientApp::applyOrientationSetting, 100);
                 break;
             default:
                 break;
