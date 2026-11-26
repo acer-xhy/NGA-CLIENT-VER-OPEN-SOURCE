@@ -64,6 +64,7 @@ import gov.anzong.androidnga.activity.compose.board.ForumBoardView
 import gov.anzong.androidnga.activity.compose.board.ForumBoardViewModel
 import kotlinx.coroutines.launch
 import sp.phone.common.User
+import sp.phone.util.ActivityUtils
 
 class NavigationDrawerFragment : BaseComposeFragment() {
 
@@ -108,6 +109,9 @@ class NavigationDrawerFragment : BaseComposeFragment() {
             }),
             OptionMenuData(title = "我的缓存", action = {
                 viewModel.startCacheTopicPage(requireContext())
+            }),
+            OptionMenuData(title = "浏览历史", action = {
+                ActivityUtils.startHistoryTopicActivity(requireContext())
             }),
             OptionMenuData(title = "短消息", action = {
                 viewModel.startMessagePage(requireContext())
@@ -337,6 +341,10 @@ class NavigationDrawerFragment : BaseComposeFragment() {
                             onClick = { viewModel.startNotificationActivity(requireActivity()) },
                             extra = extra
                         )
+                        NavigationItem(
+                            label = "浏览历史",
+                            iconId = R.drawable.ic_action_history,
+                            onClick = { ActivityUtils.startHistoryTopicActivity(requireContext()) })
                         NavigationItem(
                             label = "关于",
                             iconId = R.drawable.ic_action_about,
