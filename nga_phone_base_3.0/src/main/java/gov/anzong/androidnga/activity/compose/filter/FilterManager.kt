@@ -1,7 +1,6 @@
 package gov.anzong.androidnga.activity.compose.filter
 
 import android.content.Context
-import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.fastjson2.JSON
 import com.client.androidnga.base.api.service.IFilterManagerService
 import gov.anzong.androidnga.base.kv.DataStore
@@ -133,30 +132,6 @@ object FilterManager : IFilterManagerService {
 
     override fun isFilterUser(uid: String): Boolean {
         return filterUserById(uid)
-    }
-
-    override fun init(context: Context?) {
-    }
-
-}
-
-
-@Route(path = IFilterManagerService.ROUTER_PATH)
-class FilterManagerImpl : IFilterManagerService {
-
-    override fun isFilterUser(uid: String): Boolean {
-        return FilterManager.isFilterUser(uid)
-    }
-
-    override fun addFilterUser(uid: String, userName: String) {
-        FilterManager.addFilterUser(uid = uid, userName = userName)
-    }
-
-    override fun removeFilterUser(uid: String) {
-        FilterManager.removeFilterUser(uid)
-    }
-
-    override fun init(context: Context?) {
     }
 
 }

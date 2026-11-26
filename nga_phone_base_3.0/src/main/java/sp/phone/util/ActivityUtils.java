@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.LauncherSubActivity;
@@ -314,7 +314,7 @@ public class ActivityUtils {
     }
 
     public static void startLoginActivity(Context context) {
-        ARouter.getInstance().build(ARouterConstants.ACTIVITY_LOGIN).navigation((Activity) context, 1);
+        Router.build(ARouterConstants.ACTIVITY_LOGIN).navigation((Activity) context, 1);
     }
 
     public static void startFavoriteTopicActivity(Context context) {

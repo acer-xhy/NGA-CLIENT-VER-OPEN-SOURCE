@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 import com.alibaba.fastjson2.JSON;
 
 import gov.anzong.androidnga.R;
@@ -247,7 +247,7 @@ public class TopicSearchFragment extends BaseFragment implements View.OnClickLis
             TopicListParam param = new TopicListParam();
             param.title = info.getSubject();
             param.stid = info.getTid();
-            ARouter.getInstance().build(ARouterConstants.ACTIVITY_TOPIC_LIST)
+            Router.build(ARouterConstants.ACTIVITY_TOPIC_LIST)
                     .withParcelable(ParamKey.KEY_PARAM, param)
                     .navigation();
 

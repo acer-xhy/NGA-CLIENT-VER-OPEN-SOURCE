@@ -3,7 +3,7 @@ package gov.anzong.androidnga.activity.compose
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import gov.anzong.androidnga.arouter.ARouterConstants
 import gov.anzong.androidnga.base.util.ToastUtils
 import gov.anzong.androidnga.core.board.data.BoardEntity
@@ -105,8 +105,7 @@ class SearchViewModel : ViewModel() {
             if (data == null) {
                 ToastUtils.info("没有找到符合条件的版面或者网络错误")
             } else {
-                ARouter.getInstance()
-                    .build(ARouterConstants.ACTIVITY_TOPIC_LIST)
+                Router.build(ARouterConstants.ACTIVITY_TOPIC_LIST)
                     .withInt(ParamKey.KEY_FID, data.fid)
                     .withString(ParamKey.BOARD_HEAD, data.head)
                     .withString(ParamKey.KEY_TITLE, data.name)
@@ -123,8 +122,7 @@ class SearchViewModel : ViewModel() {
         } else {
             putHistory(searchMode.value!!, query)
         }
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_PROFILE)
+        Router.build(ARouterConstants.ACTIVITY_PROFILE)
             .withString("mode", searchUserMode)
             .withString(searchUserMode, realQuery)
             .navigation()
@@ -137,8 +135,7 @@ class SearchViewModel : ViewModel() {
 
         putHistory(searchMode.value!!, query)
 
-        val postcard = ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_TOPIC_LIST)
+        val postcard = Router.build(ARouterConstants.ACTIVITY_TOPIC_LIST)
             .withInt("content", if (searchTopicWithContent) 1 else 0)
             .withString("key", query)
         if (searchTopicMode == SEARCH_MODE_TOPIC_CURRENT && fid != 0) {

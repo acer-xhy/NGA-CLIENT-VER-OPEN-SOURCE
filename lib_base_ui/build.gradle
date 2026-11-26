@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.library'
-    alias(libs.plugins.android.legacy.kapt)
 }
 
 android {
@@ -13,12 +12,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-
-        kapt {
-            arguments {
-                arg("AROUTER_MODULE_NAME", project.getName())
-            }
-        }
     }
 
     buildTypes {
@@ -38,6 +31,4 @@ dependencies {
     implementation "com.google.android.material:material:$androidx_material_version"
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation project(':lib_base_service_api')
-    implementation "com.alibaba:arouter-api:$arouter_version"
-    kapt "com.alibaba:arouter-compiler:$arouter_version"
 }

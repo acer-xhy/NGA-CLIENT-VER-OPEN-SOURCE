@@ -3,7 +3,7 @@ package com.client.androidnga.account.profile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import com.client.androidnga.base.api.service.IFilterManagerService
 import com.client.androidnga.base.network.ApiError
 import com.client.androidnga.core.data.html.HtmlData
@@ -67,11 +67,9 @@ class ProfileViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         val signRaw = item.sign
         val adminForums = toAdminForumsState(item.adminForums)
         val reputation = toReputationState(item.fame, item.reputation)
-        val isFilterUser = ARouter.getInstance()
-            .navigation(IFilterManagerService::class.java)
+        val isFilterUser = Router.get(IFilterManagerService::class.java)
             .isFilterUser(uid)
-        val isCurrentUser = ARouter.getInstance()
-            .navigation(IUserManagerService::class.java)
+        val isCurrentUser = Router.get(IUserManagerService::class.java)
             .isActiveAccount(uid)
         val registerDate =
             if (item.regdate > 0) StringUtils.timeStamp2Date1(item.regdate.toString()) else "N/A"
@@ -189,7 +187,7 @@ class ProfileViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     }
 
     private fun toggleFilterUser(uid: String, userName: String, isAdd: Boolean) {
-        val filterManager = ARouter.getInstance().navigation(IFilterManagerService::class.java)
+        val filterManager = Router.get(IFilterManagerService::class.java)
         if (isAdd) {
             filterManager.addFilterUser(uid, userName)
         } else {

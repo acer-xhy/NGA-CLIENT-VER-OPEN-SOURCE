@@ -8,14 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.alibaba.android.arouter.facade.annotation.Route
 import com.client.androidnga.message.R
 import com.justwen.androidnga.base.activity.ARouterConstants
 import com.justwen.androidnga.ui.compose.BaseComposeActivity
 import gov.anzong.androidnga.base.util.ToastUtils
 import kotlinx.coroutines.launch
 
-@Route(path = ARouterConstants.ACTIVITY_MESSAGE_POST)
 class MessagePostActivity : BaseComposeActivity() {
 
     private val viewModel: MessagePostViewModel by lazy {

@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -81,8 +81,7 @@ public class WebViewClientEx extends WebViewClient {
                 }
 
                 if (!StringUtils.isEmpty(data)) {
-                    ARouter.getInstance()
-                            .build(ARouterConstants.ACTIVITY_PROFILE)
+                    Router.build(ARouterConstants.ACTIVITY_PROFILE)
                             .withString("mode", "username")
                             .withString("username", data)
                             .navigation(context);

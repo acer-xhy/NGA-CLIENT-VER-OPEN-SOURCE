@@ -1,8 +1,8 @@
 package com.justwen.androidnga.base.service.api
 
-import com.alibaba.android.arouter.facade.template.IProvider
 
-interface IThemeManagerService : IProvider {
+
+interface IThemeManagerService  {
 
     companion object {
         const val ROUTER_PATH = "/main/theme"

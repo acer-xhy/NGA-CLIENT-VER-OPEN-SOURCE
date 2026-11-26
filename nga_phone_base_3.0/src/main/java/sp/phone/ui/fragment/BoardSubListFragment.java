@@ -10,7 +10,7 @@ import android.widget.Checkable;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 
 import java.util.List;
 
@@ -81,8 +81,7 @@ public class BoardSubListFragment extends BaseRxFragment implements View.OnClick
                 mSubscribeTask.subscribe(board, callBack);
             }
         } else {
-            ARouter.getInstance()
-                    .build(ARouterConstants.ACTIVITY_TOPIC_LIST)
+            Router.build(ARouterConstants.ACTIVITY_TOPIC_LIST)
                     .withString(ParamKey.KEY_TITLE, board.getName())
                     .withInt(ParamKey.KEY_FID, board.getFid())
                     .withInt(ParamKey.KEY_STID, board.getStid())

@@ -55,12 +55,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import com.alibaba.android.arouter.facade.annotation.Route
+import com.justwen.androidnga.base.router.LoginGuard
 import com.justwen.androidnga.ui.compose.BaseComposeActivity
 import com.justwen.androidnga.ui.compose.widget.TopAppBarData
 import gov.anzong.androidnga.arouter.ARouterConstants
 
-@Route(path = ARouterConstants.ACTIVITY_SEARCH)
 class SearchActivity : BaseComposeActivity() {
 
     private val viewModel: SearchViewModel by lazy {
@@ -70,6 +69,10 @@ class SearchActivity : BaseComposeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         viewModel.fid = intent.getIntExtra("fid", 0)
         super.onCreate(savedInstanceState)
+        if (LoginGuard.intercept(this, ARouterConstants.ACTIVITY_SEARCH)) {
+            finish()
+            return
+        }
     }
 
     override fun getTopAppBarData(): TopAppBarData {

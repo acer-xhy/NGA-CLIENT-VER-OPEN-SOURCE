@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- SeekBarEx 的属性。属性名沿用原 SignSeekBar 的 ssb_ 前缀，布局文件无需改动。 -->
+    <declare-styleable name="SeekBarEx">
+        <attr name="ssb_track_color" format="color" />
+        <attr name="ssb_track_size" format="dimension" />
+        <attr name="ssb_second_track_color" format="color" />
+        <attr name="ssb_second_track_size" format="dimension" />
+        <attr name="ssb_thumb_color" format="color" />
+        <attr name="ssb_thumb_radius" format="dimension" />
+        <attr name="ssb_thumb_radius_on_dragging" format="dimension" />
+        <attr name="ssb_show_sign" format="boolean" />
+        <attr name="ssb_sign_color" format="color" />
+        <attr name="ssb_sign_text_color" format="color" />
+        <attr name="ssb_sign_text_size" format="dimension" />
+    </declare-styleable>
+
+</resources>

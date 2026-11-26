@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
 
 import gov.anzong.androidnga.arouter.ARouterConstants;
 import gov.anzong.androidnga.common.util.StringsKt;
@@ -20,7 +19,6 @@ import sp.phone.util.StringUtils;
 /**
  * 帖子详情页, 是否MD都用这个
  */
-@Route(path = ARouterConstants.ACTIVITY_TOPIC_CONTENT)
 public class ArticleListActivity extends BaseActivity {
 
     private ArticleListParam mRequestParam;

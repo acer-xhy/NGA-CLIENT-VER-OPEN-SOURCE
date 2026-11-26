@@ -1,8 +1,8 @@
 package com.client.androidnga.base.api.service
 
-import com.alibaba.android.arouter.facade.template.IProvider
 
-interface IFilterManagerService: IProvider {
+
+interface IFilterManagerService {
 
     companion object {
         const val ROUTER_PATH = "/main/filter"

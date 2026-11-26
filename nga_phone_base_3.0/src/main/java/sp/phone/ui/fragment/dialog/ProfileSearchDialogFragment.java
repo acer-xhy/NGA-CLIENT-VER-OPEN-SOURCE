@@ -18,7 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 import com.justwen.androidnga.base.activity.ARouterConstants;
 
 import java.util.Objects;
@@ -108,7 +108,7 @@ public class ProfileSearchDialogFragment extends BaseDialogFragment {
     }
 
     private void startProfileActivity(String uid, String userName) {
-        ARouter.getInstance().build(ARouterConstants.ACTIVITY_PROFILE)
+        Router.build(ARouterConstants.ACTIVITY_PROFILE)
                 .withString("uid", uid).withString("username", userName).navigation();
     }
 

@@ -11,24 +11,27 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import com.client.androidnga.ui.compose3.theme.AppTheme
 import com.justwen.androidnga.base.activity.ARouterConstants
 import com.justwen.androidnga.base.service.api.IThemeManagerService
+import com.justwen.androidnga.base.router.LoginGuard
 import com.justwen.androidnga.ui.compose.BaseComposeActivity
 import gov.anzong.androidnga.base.util.ToastUtils
 import kotlinx.coroutines.launch
 import sp.phone.param.ParamKey
 import java.net.URLEncoder
 
-@Route(path = ARouterConstants.ACTIVITY_PROFILE)
 class ProfileActivity : BaseComposeActivity() {
 
     private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (LoginGuard.intercept(this, ARouterConstants.ACTIVITY_PROFILE)) {
+            finish()
+            return
+        }
         // 页面内的跳转、Toast 等一次性副作用统一在这里消费，ViewModel 只负责分发
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -50,7 +53,7 @@ class ProfileActivity : BaseComposeActivity() {
 
     override fun buildContentView() {
         val index =
-            ARouter.getInstance().navigation(IThemeManagerService::class.java).getThemeIndex()
+            Router.get(IThemeManagerService::class.java).getThemeIndex()
         setContent {
             AppTheme(themeIndex = index) {
                 val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -79,8 +82,7 @@ class ProfileActivity : BaseComposeActivity() {
     }
 
     private fun sendShortMessage(userName: String) {
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_MESSAGE_POST)
+        Router.build(ARouterConstants.ACTIVITY_MESSAGE_POST)
             .withString("to", userName)
             .withString(ParamKey.KEY_ACTION, "new")
             .withString("messagemode", "yes")
@@ -110,24 +112,21 @@ class ProfileActivity : BaseComposeActivity() {
     }
 
     private fun openForum(fid: Int, forumName: String) {
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_THREAD_LIST)
+        Router.build(ARouterConstants.ACTIVITY_THREAD_LIST)
             .withInt(ParamKey.KEY_FID, fid)
             .withString(ParamKey.KEY_TITLE, forumName)
             .navigation(this)
     }
 
     private fun searchPost(uid: String, userName: String) {
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_THREAD_LIST)
+        Router.build(ARouterConstants.ACTIVITY_THREAD_LIST)
             .withInt(ParamKey.KEY_AUTHOR_ID, uid.toInt())
             .withString(ParamKey.KEY_AUTHOR, userName)
             .navigation(this)
     }
 
     private fun searchReply(uid: String, userName: String) {
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_THREAD_LIST)
+        Router.build(ARouterConstants.ACTIVITY_THREAD_LIST)
             .withInt(ParamKey.KEY_AUTHOR_ID, uid.toInt())
             .withString(ParamKey.KEY_AUTHOR, userName)
             .withInt(ParamKey.KEY_SEARCH_POST, 1)

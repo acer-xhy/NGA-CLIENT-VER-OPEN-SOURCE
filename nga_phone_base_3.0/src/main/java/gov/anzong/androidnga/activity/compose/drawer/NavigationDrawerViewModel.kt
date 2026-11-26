@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import com.justwent.androidnga.bu.UserManager
 import gov.anzong.androidnga.R
 import gov.anzong.androidnga.activity.AboutActivity
@@ -93,8 +93,7 @@ class NavigationDrawerViewModel : ViewModel() {
     }
 
     fun startSearchActivity(activity: Activity) {
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_SEARCH)
+        Router.build(ARouterConstants.ACTIVITY_SEARCH)
             .navigation(activity)
     }
 

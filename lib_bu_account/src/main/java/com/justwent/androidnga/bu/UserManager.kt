@@ -3,7 +3,6 @@ package com.justwent.androidnga.bu
 import android.app.AlertDialog
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.alibaba.android.arouter.facade.annotation.Route
 import com.justwen.androidnga.base.service.api.IUserManagerService
 import gov.anzong.androidnga.base.util.PreferenceUtils
 import gov.anzong.androidnga.base.util.ToastUtils
@@ -211,30 +210,4 @@ object UserManager : IUserManagerService {
             }
         }
     }
-
-    override fun init(context: Context?) = Unit
-
-}
-
-@Route(path = IUserManagerService.ROUTER_PATH)
-class UserManagerService : IUserManagerService {
-
-    override val activeAccountIndexState: StateFlow<Int>
-        get() = UserManager.activeAccountIndexState
-
-    override fun showUserSwitchDialog(context: Context, callback: (() -> Unit)?) {
-        UserManager.showUserSwitchDialog(context, callback)
-    }
-
-    override fun addUser(uid: String, cid: String, name: String) {
-        UserManager.addUser(uid, cid, name)
-    }
-
-    override fun isActiveAccount(uid: String, name: String): Boolean {
-        return UserManager.getActiveUser()?.let {
-            it.userId == uid
-        } ?: return false
-    }
-
-    override fun init(context: Context?) = Unit
 }

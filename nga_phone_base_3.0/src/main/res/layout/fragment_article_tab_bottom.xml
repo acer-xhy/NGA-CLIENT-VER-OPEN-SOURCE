@@ -40,7 +40,7 @@
 
         </FrameLayout>
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
+        <sp.phone.view.widget.FloatingActionsMenu
             android:id="@+id/fab_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,22 +48,22 @@
             app:layout_behavior="sp.phone.view.behavior.ScrollAwareFamBehavior">
 
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
+            <sp.phone.view.widget.FloatingActionButton
                 android:id="@+id/fab_post"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fab_title="@string/reply_thread"
-                app:srcCompat="@drawable/btn_ic_create"
+                android:src="@drawable/btn_ic_create"
                 tools:ignore="VectorDrawableCompat"/>
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
+            <sp.phone.view.widget.FloatingActionButton
                 android:id="@+id/fab_refresh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/btn_ic_refresh"
+                android:src="@drawable/btn_ic_refresh"
                 tools:ignore="VectorDrawableCompat" />
 
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+        </sp.phone.view.widget.FloatingActionsMenu>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -72,7 +72,8 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="@dimen/article_list_tab_height"
-        android:layout_gravity="bottom" />
+        android:layout_gravity="bottom"
+        app:tabTextAppearance="@style/TextAppearance.Nga.Tab" />
 
 
 </FrameLayout>

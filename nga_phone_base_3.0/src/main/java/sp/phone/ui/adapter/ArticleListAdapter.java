@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -185,8 +185,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             if (row.isAnonymous) {
                 ActivityUtils.showToast("这白痴匿名了,神马都看不到");
             } else if (row.author != null){
-                ARouter.getInstance()
-                        .build(ARouterConstants.ACTIVITY_PROFILE)
+                Router.build(ARouterConstants.ACTIVITY_PROFILE)
                         .withString("mode", "uid")
                         .withString("uid", String.valueOf(row.authorId))
                         .navigation();

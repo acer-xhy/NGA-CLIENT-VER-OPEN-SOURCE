@@ -2,10 +2,8 @@ package com.justwen.androidnga.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.alibaba.android.arouter.facade.annotation.Route
 import com.justwen.androidnga.base.activity.ARouterConstants
 
-@Route(path = ARouterConstants.ACTIVITY_FRAGMENT_TEMPLATE)
 class FragmentTemplateActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.os.Process;
 import android.webkit.WebView;
 
-import com.alibaba.android.arouter.launcher.ARouter;
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper;
 import com.justwen.androidnga.cloud.CloudServerManager;
+import com.justwen.androidnga.base.router.LoginGuard;
 import com.justwent.androidnga.bu.UserManager;
 
 import org.apache.commons.io.FileUtils;
@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 import gov.anzong.androidnga.activity.compose.board.ForumBoardViewModel;
+import gov.anzong.androidnga.arouter.ARouterConstants;
 import gov.anzong.androidnga.base.logger.Logger;
 import gov.anzong.androidnga.base.util.ContextUtils;
 import gov.anzong.androidnga.base.util.PreferenceUtils;
@@ -26,6 +27,7 @@ import gov.anzong.androidnga.common.PreferenceKey;
 import gov.anzong.androidnga.common.util.NLog;
 import gov.anzong.androidnga.common.util.ReflectUtils;
 import gov.anzong.androidnga.db.AppDatabase;
+import gov.anzong.androidnga.router.NgaRouteTable;
 import sp.phone.common.UserManagerImpl;
 import sp.phone.common.VersionUpgradeHelper;
 import sp.phone.task.CheckInTask;
@@ -135,11 +137,11 @@ public class NgaClientApp extends Application {
     }
 
     private void initRouter() {
-        if (BuildConfig.DEBUG) {   // 这两行必须写在init之前，否则这些配置在init过程中将无效
-            ARouter.openLog();     // 打印日志
-            ARouter.openDebug();   // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
-        }
-        ARouter.init(this); // 尽可能早，推荐在Application中初始化
+        // 路由表 / 服务表一次性注册，取代原 ARouter 的注解扫描
+        NgaRouteTable.install(this, BuildConfig.DEBUG);
+        // 需要登录的页面统一在目标 Activity 里用 LoginGuard 拦截（替代原 ARouter 拦截器）
+        LoginGuard.INSTANCE.setLoginChecker(() -> UserManagerImpl.getInstance().hasValidUser());
+        LoginGuard.INSTANCE.addGatedPaths(ARouterConstants.ACTIVITY_NEED_LOGIN);
     }
 
     private void initCoreModule() {

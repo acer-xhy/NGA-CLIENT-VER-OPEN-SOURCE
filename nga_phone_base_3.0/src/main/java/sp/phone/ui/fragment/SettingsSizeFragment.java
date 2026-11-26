@@ -10,14 +10,12 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.zhouyou.view.seekbar.SignSeekBar;
-
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.base.widget.SeekBarEx;
 import sp.phone.common.Constants;
 import sp.phone.common.PhoneConfiguration;
 
-public class SettingsSizeFragment extends BaseFragment implements  SignSeekBar.OnProgressChangedListener {
+public class SettingsSizeFragment extends BaseFragment implements SeekBarEx.OnProgressChangedListener {
 
     private PhoneConfiguration mConfiguration = PhoneConfiguration.getInstance();
 
@@ -97,14 +95,14 @@ public class SettingsSizeFragment extends BaseFragment implements  SignSeekBar.O
     }
 
     @Override
-    public void onProgressChanged(SignSeekBar signSeekBar, int progress, float progressFloat, boolean fromUser) {
+    public void onProgressChanged(SeekBarEx signSeekBar, int progress, float progressFloat, boolean fromUser) {
         if (signSeekBar.getId() == R.id.seek_web_size) {
             mWebView.getSettings().setTextZoom(progress);
         }
     }
 
     @Override
-    public void getProgressOnActionUp(SignSeekBar signSeekBar, int progress, float progressFloat) {
+    public void getProgressOnActionUp(SeekBarEx signSeekBar, int progress, float progressFloat) {
         int id = signSeekBar.getId();
         if (id == R.id.seek_topic_title) {
             mConfiguration.setTopicTitleSize(progress);
@@ -118,7 +116,7 @@ public class SettingsSizeFragment extends BaseFragment implements  SignSeekBar.O
     }
 
     @Override
-    public void getProgressOnFinally(SignSeekBar signSeekBar, int progress, float progressFloat, boolean fromUser) {
+    public void getProgressOnFinally(SeekBarEx signSeekBar, int progress, float progressFloat, boolean fromUser) {
 
 
     }

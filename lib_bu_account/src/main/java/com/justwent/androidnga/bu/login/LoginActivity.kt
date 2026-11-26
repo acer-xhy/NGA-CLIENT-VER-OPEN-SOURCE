@@ -12,12 +12,10 @@ import android.webkit.WebViewClient
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModelProvider
-import com.alibaba.android.arouter.facade.annotation.Route
 import com.justwen.androidnga.base.activity.ARouterConstants
 import com.justwen.androidnga.ui.compose.BaseComposeActivity
 import gov.anzong.androidnga.base.util.ToastUtils
 
-@Route(path = ARouterConstants.ACTIVITY_LOGIN)
 class LoginActivity : BaseComposeActivity() {
 
     private val viewModel: LoginViewModel by lazy {

@@ -10,5 +10,9 @@
         <attr name="name" format="string"/>
     </declare-styleable>
 
+    <!-- 自研浮动操作按钮：展开时显示在按钮旁的文字 -->
+    <declare-styleable name="FloatingActionButton">
+        <attr name="fab_title" format="string"/>
+    </declare-styleable>
 
 </resources>

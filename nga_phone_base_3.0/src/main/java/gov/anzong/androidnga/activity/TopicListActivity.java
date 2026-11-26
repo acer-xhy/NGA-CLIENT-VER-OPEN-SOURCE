@@ -8,8 +8,9 @@ import android.view.MenuItem;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
+
+import com.justwen.androidnga.base.router.LoginGuard;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.compose.board.ForumBoardViewModel;
@@ -25,7 +26,6 @@ import sp.phone.util.StringUtils;
 /**
  * 帖子列表
  */
-@Route(path = ARouterConstants.ACTIVITY_TOPIC_LIST)
 public class TopicListActivity extends BaseActivity {
 
     private static String TAG = TopicListActivity.class.getSimpleName();
@@ -79,6 +79,10 @@ public class TopicListActivity extends BaseActivity {
         setToolbarEnabled(true);
         mRequestParam = getRequestParam();
         super.onCreate(savedInstanceState);
+        if (LoginGuard.INSTANCE.intercept(this, ARouterConstants.ACTIVITY_TOPIC_LIST)) {
+            finish();
+            return;
+        }
         if (mRequestParam != null) {
             setupFragment();
         } else {
@@ -126,8 +130,7 @@ public class TopicListActivity extends BaseActivity {
         } else if (itemId == R.id.menu_twenty_four) {
             showTwentyFourList();
         } else if (itemId == R.id.menu_search) {
-            ARouter.getInstance()
-                    .build(ARouterConstants.ACTIVITY_SEARCH)
+            Router.build(ARouterConstants.ACTIVITY_SEARCH)
                     .withInt("fid", mRequestParam.fid)
                     .navigation(this);
         } else {

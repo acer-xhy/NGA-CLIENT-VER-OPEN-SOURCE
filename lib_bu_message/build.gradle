@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.library'
-    alias(libs.plugins.android.legacy.kapt)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -15,12 +14,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-
-        kapt {
-            arguments {
-                arg("AROUTER_MODULE_NAME", project.getName())
-            }
-        }
     }
 
     buildTypes {
@@ -53,8 +46,6 @@ dependencies {
     implementation "androidx.compose.material:material:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
 
-    implementation "com.alibaba:arouter-api:$arouter_version"
-    kapt "com.alibaba:arouter-compiler:$arouter_version"
 
     // paging
     implementation "androidx.paging:paging-compose:$paging_version"

@@ -13,7 +13,6 @@ buildscript {
         lifecycle_version = "2.11.1"
         retrofit_version = '3.0.0'
         paging_version = '3.5.3'
-        arouter_version = '1.5.2'
         rxjava_version = '2.2.21'
     }
     repositories {

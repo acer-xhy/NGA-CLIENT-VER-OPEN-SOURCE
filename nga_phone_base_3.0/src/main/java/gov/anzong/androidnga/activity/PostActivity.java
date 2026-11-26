@@ -7,7 +7,6 @@ import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
 import com.justwen.androidnga.cloud.CloudServerManager;
 
 import gov.anzong.androidnga.R;
@@ -16,7 +15,6 @@ import sp.phone.param.ParamKey;
 import sp.phone.param.PostParam;
 import sp.phone.ui.fragment.TopicPostFragment;
 
-@Route(path = ARouterConstants.ACTIVITY_POST)
 public class PostActivity extends BaseActivity {
 
     private TopicPostFragment mPostFragment;

@@ -3,7 +3,7 @@ package gov.anzong.androidnga.activity.compose.filter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import gov.anzong.androidnga.arouter.ARouterConstants
 import gov.anzong.androidnga.base.util.ToastUtils
 import kotlinx.coroutines.Dispatchers
@@ -114,8 +114,7 @@ class FilterWordViewModel : ViewModel() {
     }
 
     private fun showUserProfile(user: User) {
-        ARouter.getInstance()
-            .build(ARouterConstants.ACTIVITY_PROFILE)
+        Router.build(ARouterConstants.ACTIVITY_PROFILE)
             .withString("mode", "username")
             .withString("username", user.mNickName)
             .navigation()

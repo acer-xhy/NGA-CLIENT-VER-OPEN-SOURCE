@@ -12,7 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import com.justwen.androidnga.base.service.api.IThemeManagerService
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -103,8 +103,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun initTheme() {
-        val themeManager = ARouter.getInstance().build(IThemeManagerService.ROUTER_PATH)
-            .navigation() as IThemeManagerService
+        val themeManager = Router.get(IThemeManagerService::class.java)
         setTheme(themeManager.getTheme())
     }
 

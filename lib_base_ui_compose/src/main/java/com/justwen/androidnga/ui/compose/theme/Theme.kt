@@ -6,7 +6,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import com.justwen.androidnga.base.service.api.IThemeManagerService
 
 private val DarkColorPalette = darkColors(
@@ -42,7 +42,7 @@ fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val themeManager = ARouter.getInstance().build(IThemeManagerService.ROUTER_PATH).navigation() as IThemeManagerService
+    val themeManager = Router.get(IThemeManagerService::class.java)
     val colors = if (darkTheme || themeManager.isNightMode()) {
         DarkColorPalette
     } else {

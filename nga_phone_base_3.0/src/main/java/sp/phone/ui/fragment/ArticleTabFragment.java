@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import sp.phone.view.widget.FloatingActionsMenu;
 import com.justwen.androidnga.base.activity.ARouterConstants;
 import com.trello.rxlifecycle3.android.FragmentEvent;
 

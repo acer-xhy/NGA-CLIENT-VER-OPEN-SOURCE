@@ -45,15 +45,8 @@ dependencies {
 
     api 'com.vanniktech:rxpermission:0.11.0'
     api "io.reactivex.rxjava2:rxjava:$rxjava_version"
-    implementation 'me.imid.swipebacklayout.lib:library:1.1.0'
     implementation 'net.steamcrafted:load-toast:1.0.12'
     implementation 'com.github.GrenderG:Toasty:1.5.2'
-    api('com.zhouyou:signseekbar:1.0.6') {
-        exclude group: 'com.android.support'
-    }
-    api('com.nshmura:recyclertablayout:1.5.0') {
-        exclude group: 'com.android.support'
-    }
 
     api(libs.fastjson2)
 

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.alibaba.android.arouter.launcher.ARouter;
+import com.justwen.androidnga.base.router.Router;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.BaseActivity;
@@ -88,8 +88,7 @@ public class ArticleListFragment extends BaseMvpFragment<ArticleListPresenter> i
                 if (mThreadRowInfo.isComment) {
                     showToast(R.string.cannot_eidt_comment);
                 } else {
-                    ARouter.getInstance()
-                            .build(ARouterConstants.ACTIVITY_POST)
+                    Router.build(ARouterConstants.ACTIVITY_POST)
                             .withString(ParamKey.KEY_PID, pidStr)
                             .withString(ParamKey.KEY_TID, tidStr)
                             .withString("title", StringUtils.unEscapeHtml(row.subject))
@@ -113,8 +112,7 @@ public class ArticleListFragment extends BaseMvpFragment<ArticleListPresenter> i
             } else if (itemId == R.id.menu_ban_this_one) {
                 mPresenter.banThisSB(row);
             } else if (itemId == R.id.menu_show_this_person_only) {
-                ARouter.getInstance()
-                        .build(ARouterConstants.ACTIVITY_TOPIC_CONTENT)
+                Router.build(ARouterConstants.ACTIVITY_TOPIC_CONTENT)
                         .withString("tab", "1")
                         .withInt(ParamKey.KEY_TID, tid)
                         .withInt(ParamKey.KEY_AUTHOR_ID, row.authorId)

@@ -5,20 +5,17 @@ import android.content.Intent
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
-import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
+import com.justwen.androidnga.base.router.Router
 import com.justwen.androidnga.base.activity.ARouterConstants
 import com.justwen.androidnga.ui.compose.BaseComposeActivity
 
-@Route(path = ARouterConstants.ACTIVITY_MESSAGE_DETAIL)
 class MessageDetailActivity : BaseComposeActivity() {
 
     private val viewModel: MessageDetailViewModel by viewModels()
 
     override fun getFabClickAction(): () -> Unit {
         return {
-            ARouter.getInstance()
-                .build(ARouterConstants.ACTIVITY_MESSAGE_POST)
+            Router.build(ARouterConstants.ACTIVITY_MESSAGE_POST)
                 .withString("mid", viewModel.mid)
                 .withString("action", "reply")
                 .withString("to", viewModel.recipient)

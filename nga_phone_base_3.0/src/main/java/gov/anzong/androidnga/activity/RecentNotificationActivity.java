@@ -6,19 +6,23 @@ import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
+
+import com.justwen.androidnga.base.router.LoginGuard;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.arouter.ARouterConstants;
 import sp.phone.ui.fragment.RecentNotificationFragment;
 
-@Route(path = ARouterConstants.ACTIVITY_NOTIFICATION)
 public class RecentNotificationActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setToolbarEnabled(true);
         super.onCreate(savedInstanceState);
+        if (LoginGuard.INSTANCE.intercept(this, ARouterConstants.ACTIVITY_NOTIFICATION)) {
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_toolbar_template);
         setupToolbar();
         FragmentManager fm = getSupportFragmentManager();

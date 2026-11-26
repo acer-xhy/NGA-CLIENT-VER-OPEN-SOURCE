@@ -1,10 +1,10 @@
 package com.justwen.androidnga.base.service.api
 
 import android.content.Context
-import com.alibaba.android.arouter.facade.template.IProvider
+
 import kotlinx.coroutines.flow.StateFlow
 
-interface IUserManagerService : IProvider {
+interface IUserManagerService  {
 
     companion object {
         const val ROUTER_PATH = "/user/service"

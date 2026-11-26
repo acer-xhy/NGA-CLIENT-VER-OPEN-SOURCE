@@ -43,7 +43,6 @@ dependencies {
     // 图标库自 1.7.8 起从 material 中剥离并停止更新（官方冻结），单列出来供各模块使用
     api "androidx.compose.material:material-icons-core:1.7.8"
     debugApi "androidx.compose.ui:ui-tooling:$compose_ui_version"
-    implementation 'com.alibaba:arouter-api:1.5.2'
 
     api "io.coil-kt:coil-compose:2.7.0"
 

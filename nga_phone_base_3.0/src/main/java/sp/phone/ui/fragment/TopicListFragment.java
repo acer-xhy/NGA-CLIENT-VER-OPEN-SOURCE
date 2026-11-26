@@ -15,8 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.alibaba.android.arouter.launcher.ARouter;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.justwen.androidnga.base.router.Router;
+import sp.phone.view.widget.FloatingActionsMenu;
 import com.google.android.material.appbar.AppBarLayout;
 
 import gov.anzong.androidnga.R;
@@ -110,8 +110,7 @@ public class TopicListFragment extends TopicSearchFragment {
     }
 
     public void startPostActivity() {
-        ARouter.getInstance()
-                .build(ARouterConstants.ACTIVITY_POST)
+        Router.build(ARouterConstants.ACTIVITY_POST)
                 .withInt(ParamKey.KEY_FID, mRequestParam.fid)
                 .withString(ParamKey.KEY_STID, mRequestParam.stid != 0 ? String.valueOf(mRequestParam.stid) : null)
                 .withString(ParamKey.KEY_ACTION, "new")
