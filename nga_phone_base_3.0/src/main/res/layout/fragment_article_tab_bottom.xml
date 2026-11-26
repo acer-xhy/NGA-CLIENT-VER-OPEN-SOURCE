@@ -73,7 +73,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/article_list_tab_height"
         android:layout_gravity="bottom"
-        app:tabTextAppearance="@style/TextAppearance.Nga.Tab" />
+        app:tabTextAppearance="@style/TextAppearance.Nga.Tab"
+        app:tabTextColor="?android:textColorSecondary"
+        app:tabSelectedTextColor="?android:textColorPrimary" />
 
 
 </FrameLayout>
