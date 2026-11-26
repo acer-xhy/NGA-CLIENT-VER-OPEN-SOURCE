@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.ArticleListActivity;
@@ -28,6 +30,18 @@ public class WebViewClientEx extends WebViewClient {
 
 
     private static final String NGA_USER_PROFILE_END = "&";
+
+    /**
+     * B 站 App 包名，命中视频链接时优先拉起它，未安装则回退浏览器。
+     */
+    private static final String BILIBILI_PACKAGE = "tv.danmaku.bili";
+
+    /**
+     * 从 B 站视频页链接中提取视频 id（BV 号或 av 号），用于拼 bilibili://video/{id}。
+     */
+    private static final Pattern BILIBILI_VIDEO_ID =
+            Pattern.compile("(?:https?://)?(?:www\\.|m\\.)?bilibili\\.com/video/(BV[0-9A-Za-z]{10}|av\\d+)",
+                    Pattern.CASE_INSENSITIVE);
 
     private static final String[] SUFFIX_IMAGE = {
             ".gif", ".jpg", ".png", ".jpeg", ".bmp", ".webp"
@@ -91,6 +105,36 @@ public class WebViewClientEx extends WebViewClient {
         return false;
     }
 
+    /**
+     * B 站视频链接优先用 B 站 App 打开；未安装或无法解析时返回 false，交给后续兜底（浏览器）。
+     */
+    private boolean overrideBilibiliUrlLoading(Context context, String url) {
+        if (!url.contains("bilibili.com/video/") && !url.contains("b23.tv")) {
+            return false;
+        }
+        String target;
+        Matcher matcher = BILIBILI_VIDEO_ID.matcher(url);
+        if (matcher.find()) {
+            // 能拿到 BV/av 号：连同 App 一起打开对应视频页
+            target = "bilibili://video/" + matcher.group(1);
+        } else if (url.contains("b23.tv")) {
+            // 短链没有视频 id，直接交给 B 站 App 解析（App 声明了 b23.tv 的 App Links）
+            target = url.startsWith("http") ? url : "https://" + url;
+        } else {
+            return false;
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(target));
+        intent.setPackage(BILIBILI_PACKAGE);
+        try {
+            // 不要用 resolveActivity 预检：targetSdk 30+ 的包可见性限制会让它返回 null，
+            // 从而误判为“B 站没装”并回退浏览器。startActivity 不受该限制，失败再兜底。
+            context.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Context context = view.getContext();
@@ -139,6 +183,10 @@ public class WebViewClientEx extends WebViewClient {
                 context.startActivity(intent);
                 return true;
             }
+        }
+
+        if (overrideBilibiliUrlLoading(context, url)) {
+            return true;
         }
 
         if (!overrideProfileUrlLoading(context, url)) {
