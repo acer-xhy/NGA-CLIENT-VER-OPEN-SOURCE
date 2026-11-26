@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  资源压缩白名单。
+  板块图标由 ForumBoardView.getResId() 通过
+      getIdentifier("p" + fid | "p_" + abs(fid), "drawable", packageName)
+  反射获取，代码里没有静态引用，必须在此 keep，否则会被 shrinkResources 移除。
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/p*,@drawable/p_*"
+    tools:shrinkMode="safe" />
