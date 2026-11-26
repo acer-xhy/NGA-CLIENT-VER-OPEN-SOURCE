@@ -195,7 +195,14 @@ class ForumBasicDecoder : IForumDecoder {
                     + "\\[pid=(.+?)\\](.+?)\\[/pid\\]",
             "<a href='" + htmlData?.nGAHost + "read.php?pid=$1' style='font-weight: bold;color:#3181f4'>[$2]</a>"
         )
-        // flash
+        // flash - B 站视频链接：渲染为外链卡片，避免"像是可以就地播放"的播放器外观
+        content = StringUtils.replaceAll(
+            content,
+            IForumDecoder.ignoreCaseTag + "\\[flash\\]((?:https?://)?(?:(?:www\\.|m\\.)?bilibili\\.com/video/|b23\\.tv/)[^\\[|\\]]+)\\[/flash\\]",
+            buildVideoLinkCard(htmlData?.isDarkMode == true)
+        )
+
+        // flash - 其他链接：保留原占位图
         content = StringUtils.replaceAll(
             content,
             IForumDecoder.ignoreCaseTag + "\\[flash\\](http[^\\[|\\]]+)\\[/flash\\]",
@@ -389,6 +396,27 @@ class ForumBasicDecoder : IForumDecoder {
         )
 
         return content
+    }
+
+    /**
+     * B 站视频的外链卡片（$1 由 replaceAll 填入原始链接）。
+     * 不使用"播放器"外观，明确表达"这是要跳出去看的视频"。
+     */
+    private fun buildVideoLinkCard(darkMode: Boolean): String {
+        val borderColor = if (darkMode) "#3d3d3d" else "#e5e5e5"
+        val subColor = if (darkMode) "#9a9a9a" else "#888888"
+        return "<a href=\"$1\" style=\"display:block;text-decoration:none;border:1px solid $borderColor;" +
+                "border-radius:8px;padding:8px;margin:6px 0\">" +
+                "<table style=\"width:100%;border-collapse:collapse\"><tr>" +
+                "<td style=\"width:44px;vertical-align:middle\">" +
+                "<img src=\"file:///android_asset/video_link.png\" style=\"width:40px;height:40px;display:block\">" +
+                "</td>" +
+                "<td style=\"vertical-align:middle;padding-left:10px\">" +
+                "<div style=\"font-size:14px;font-weight:bold;color:#3181f4\">外部视频</div>" +
+                "<div style=\"font-size:11px;color:$subColor;margin-top:2px\">bilibili.com · 点击用哔哩哔哩打开</div>" +
+                "</td>" +
+                "<td style=\"width:18px;text-align:right;vertical-align:middle;color:$subColor;font-size:14px\">&#8599;</td>" +
+                "</tr></table></a>"
     }
 
     companion object {
