@@ -57,7 +57,9 @@ class MessageDetailPagingSource(mid: String) : PagingSource<Int, MessageDetailIt
             factory.parse(jsonString).onFailure {
                 result = LoadResult.Error(Exception(it.message))
             }.onSuccess {
-                val nextKey = if (it.nextPage > 0) it.nextPage else null
+                // 服务端 nextPage 是“是否还有下一页”的 0/1 标志，不是页码，
+                // 直接当 key 会导致同一 key 连续加载两次，Paging3 会抛 IllegalStateException。
+                val nextKey = if (it.nextPage > 0) page + 1 else null
                 result = LoadResult.Page(it.messageEntryList, preKey, nextKey)
             }
             // 确保一定有返回值
