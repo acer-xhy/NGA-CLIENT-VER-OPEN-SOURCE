@@ -6,6 +6,8 @@ on:
   push:
     tags:
       - '*'
+  # 手动试跑：只构建并上传 artifact 校验签名，不创建 Release（见 job 里的 if 判断）
+  workflow_dispatch:
 
 permissions:
   contents: write          # gh release create 需要写权限，缺了会 403
@@ -45,11 +47,22 @@ jobs:
       - name: 校验 tag 与版本号一致性
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
-          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::tag '$TAG' 不符合 x.y.z 或 vx.y.z 格式"; exit 1
+
+          # 版本名来源：tag push 取 tag；手动试跑取 build.gradle 声明的版本
+          GRADLE_VERSION=$(grep -oP "appVersion\s*=\s*'\K[^']+" build.gradle | head -1)
+          [ -n "$GRADLE_VERSION" ] || { echo "::error::build.gradle 里找不到 appVersion"; exit 1; }
+
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$GRADLE_VERSION"
+            echo "::notice::手动试跑，使用 build.gradle 版本 $VERSION，不会创建 Release"
+          else
+            TAG="${GITHUB_REF_NAME}"
+            VERSION="${TAG#v}"
+            if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::tag '$TAG' 不符合 x.y.z 或 vx.y.z 格式"; exit 1
+            fi
           fi
+
           IFS=. read -r MA MI PA <<< "$VERSION"
           # 版本号规则（与根 build.gradle 的 versionNameToCode 完全一致）：
           #   versionCode = MAJOR*1,000,000 + MINOR*1,000 + PATCH，例 6.0.0 -> 6000000
@@ -63,11 +76,12 @@ jobs:
           if [ "$EXPECTED_CODE" -gt 2100000000 ]; then
             echo "::error::versionCode $EXPECTED_CODE 超出 2,100,000,000"; exit 1
           fi
-          NAME=$(grep -oP "appVersionName\s*=\s*'\K[^']+" build.gradle | head -1)
-          CODE=$(grep -oP "appVersionCode\s*=\s*\K[0-9]+" build.gradle | head -1)
-          echo "tag=$TAG version=$VERSION expectedCode=$EXPECTED_CODE gradleName=$NAME gradleCode=$CODE"
-          [ "$NAME" = "$VERSION" ] || { echo "::error::build.gradle appVersionName=$NAME 与 tag $VERSION 不一致"; exit 1; }
-          [ "$CODE" = "$EXPECTED_CODE" ] || { echo "::error::build.gradle appVersionCode=$CODE 与推导值 $EXPECTED_CODE 不一致"; exit 1; }
+
+          # versionCode 由 versionName 自动推导，构建文件里没有字面数字，只能比版本名
+          [ "$GRADLE_VERSION" = "$VERSION" ] || {
+            echo "::error::build.gradle 的 appVersion=$GRADLE_VERSION 与 tag/目标版本 $VERSION 不一致"; exit 1; }
+
+          echo "version=$VERSION expectedCode=$EXPECTED_CODE"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "EXPECTED_CODE=$EXPECTED_CODE" >> "$GITHUB_ENV"
 
@@ -174,6 +188,7 @@ jobs:
           if-no-files-found: error
 
       - name: 创建 Release
+        if: github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
