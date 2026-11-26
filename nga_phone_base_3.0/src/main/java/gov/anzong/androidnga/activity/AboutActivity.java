@@ -94,7 +94,7 @@ public class AboutActivity extends MaterialAboutActivity {
         builder.title("开发团队");
         builder.addItem(new MaterialAboutActionItem.Builder()
                 .text("代码")
-                .subText("[@竹井詩織里]/[@cfan8]/[@jjimmys]\n[@Moandor]/[@Elrond]/[@Justwen]")
+                .subText("[@竹井詩織里]/[@cfan8]/[@jjimmys]\n[@Moandor]/[@Elrond]/[@Justwen]/[@xhy]")
                 .setOnLongClickAction(new MaterialAboutItemOnClickAction() {
                     @Override
                     public void onClick() {
