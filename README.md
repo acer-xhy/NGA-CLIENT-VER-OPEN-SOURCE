@@ -6,14 +6,13 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 ## 与上游的关系
 
-上游有两条线：`master` 停在上一个版本（4.2.2），实际发布走 `master_release`（5.1.2）。本仓库以 5.1.2 为起点继续开发，主线为 `master`。
+上游的发布分支是 `master_release`（5.1.2 / code 5012），本仓库把它作为唯一的同步来源：从该分支拉取并合并进本地 `master`，`master` 是唯一的开发线与推送目标。
 
 | 对比基线 | 上游版本 | 本分支领先 | 文件差异 |
 | --- | --- | --- | --- |
-| `fork/master_release`（发布分支） | 5.1.2 / code 5012 | 27 个提交 | 428 个文件，+3564 / −1022 |
-| `fork/master`（主线分支） | 4.2.2 / code 4022 | 59 个提交 | 563 个文件，+8939 / −7531 |
+| `fork/master_release` | 5.1.2 / code 5012 | 27 个提交 | 428 个文件，+3564 / −1022 |
 
-与发布分支之间的 27 个提交才是本仓库的实际增量（其中 23 个在 5.1.2 之后），与主线分支的 59 个差值包含了上游发布分支早期的功能重构。模块划分与上游一致，仍是 13 个 Gradle 模块，改动都发生在模块内部。
+27 个提交就是本仓库的全部增量，其中 23 个在 5.1.2 之后，前 4 个是本地与发布分支早期的分叉（含 2 个合并提交）。模块划分与上游一致，仍是 13 个 Gradle 模块，改动都发生在模块内部。
 
 ## 相对上游的改动
 
@@ -22,9 +21,9 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 | | 上游 | 本分支 |
 | --- | --- | --- |
 | Gradle | 8.7 | **9.9.2** |
-| AGP | 8.x | **9.5.2** |
-| Kotlin | 2.0.21 | **2.3.21** |
-| 注解处理 | kapt | **KSP 2.3.14** |
+| AGP | 8.6.1 | **9.5.2** |
+| Kotlin | 2.1.21 | **2.3.21** |
+| 注解处理 | kapt + annotationProcessor | **KSP 2.3.14** |
 | compileSdk | 36 | **37（minor 1）** |
 | minSdk / targetSdk | 31 / 36 | 31 / 36 |
 | Java 编译目标 | 17 | 17 |
@@ -35,9 +34,8 @@ AGP 9 内置 Kotlin 支持，模块不再声明 `kotlin-android`；kapt 先迁�
 
 - 关闭 Jetifier（`android.enableJetifier=false`），清除全部 support 时代依赖。
 - 原先依赖 support 时代的三个控件改为项目内自实现：`FloatingActionButton`、`FloatingActionsMenu`、`NgaSwipeRefreshLayout`。
-- 移除 ARouter，改用项目内的 `Router`（位于 `lib_base_common`）。
-- 消息列表 / 发送 / 详情、账号详情、首页抽屉、板块页等页面为 Compose + Material3（1.5.0）实现。
-- fastjson2 升到 `2.0.59.android8`。
+- 移除 ARouter，改用项目内的 `Router`（位于 `lib_base_common`）；同时清掉 ButterKnife 与 Glide 的注解处理器，`kapt` 完全退场。
+- 消息列表 / 发送 / 详情、账号详情、首页抽屉、板块页等页面为 Compose + Material3 实现，material3 由 1.4.0 升到 1.5.0。
 
 ### 构建速度与产物体积
 
@@ -106,15 +104,6 @@ nga_phone_base_3.0/build/outputs/apk/release/nga_phone_5.1.2_<MMDDHHmm>.apk
 ```
 
 release 使用 `signingConfigs.release`，keystore 路径写在 `nga_phone_base_3.0/build.gradle` 的 `jks_path`（`../keystore/nga.jks`），该文件不在仓库内，构建 release 前需要自备或改这一段配置。
-
-## 上游同步状态
-
-上游 `fork/master` 上另有 2 个提交尚未合并：
-
-- `8862cdd4` 图片域名从服务端返回的结果中取
-- `cdad1abb` 补充遗漏的版本更新提交
-
-两者涉及启动图标格式（png / webp）转换、`settings.gradle` 与若干测试文件的增删，与本分支改动有重叠，合并需要手工处理。
 
 ## 许可证
 
