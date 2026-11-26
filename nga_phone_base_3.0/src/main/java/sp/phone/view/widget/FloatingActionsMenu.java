@@ -1,7 +1,6 @@
 package sp.phone.view.widget;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -51,7 +50,11 @@ public class FloatingActionsMenu extends FrameLayout {
 
     private int mLabelsPosition = LABELS_ON_LEFT_SIDE;
 
-    private final int mGap;
+    /** 子按钮之间的竖直间距，对齐原库 dimen fab_actions_spacing = 12dp */
+    private final int mActionsSpacing;
+
+    /** 标签与子按钮之间的间距，对齐原库 dimen fab_labels_margin = 8dp */
+    private final int mLabelsMargin;
 
     private final int mAddButtonSize;
 
@@ -67,9 +70,12 @@ public class FloatingActionsMenu extends FrameLayout {
 
     public FloatingActionsMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mGap = dp(8);
+        mActionsSpacing = dp(12);
+        mLabelsMargin = dp(8);
         mAddButtonSize = dp(56);
         mActionSize = dp(40);
+        // 原库四边默认 padding 取 dimen fab_actions_spacing（12dp），菜单因此不贴屏幕边缘
+        setPadding(dp(12), dp(12), dp(12), dp(12));
         setClipChildren(false);
         setClipToPadding(false);
 
@@ -99,13 +105,15 @@ public class FloatingActionsMenu extends FrameLayout {
     private TextView createLabel(CharSequence text) {
         TextView label = new TextView(getContext());
         label.setText(text == null ? "" : text);
-        label.setTextSize(12);
-        label.setTextColor(Color.WHITE);
+        // 以下取值逐项对齐原库：style menu_labels_style(textColor #FAFAFA) + drawable fab_label_background
+        // (#B2000000、圆角 2dp、左右 16dp/上下 4dp)，字号沿用 TextView 默认 14sp
+        label.setTextSize(14);
+        label.setTextColor(0xFFFAFAFA);
         label.setGravity(Gravity.CENTER);
-        label.setPadding(dp(8), dp(4), dp(8), dp(4));
+        label.setPadding(dp(16), dp(4), dp(16), dp(4));
         GradientDrawable background = new GradientDrawable();
-        background.setColor(0xCC000000);
-        background.setCornerRadius(dp(4));
+        background.setColor(0xB2000000);
+        background.setCornerRadius(dp(2));
         label.setBackground(background);
         label.setVisibility(INVISIBLE);
         return label;
@@ -115,9 +123,9 @@ public class FloatingActionsMenu extends FrameLayout {
         return mAddButton;
     }
 
-    /** 兼容原库：行为类用它计算移出屏幕的距离，本实现没有额外底部间距 */
+    /** 对齐原库：返回菜单底部内边距，行为类用它计算移出屏幕的距离 */
     public int getAddButtonMarginBottom() {
-        return 0;
+        return getPaddingBottom();
     }
 
     public void setExpandDirection(int expandDirection, int labelsPosition) {
@@ -179,7 +187,7 @@ public class FloatingActionsMenu extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int count = mActions.size();
-        int contentHeight = mAddButtonSize + count * (mActionSize + mGap)
+        int contentHeight = mAddButtonSize + count * (mActionSize + mActionsSpacing)
                 + getPaddingTop() + getPaddingBottom();
 
         int maxLabelWidth = 0;
@@ -192,7 +200,7 @@ public class FloatingActionsMenu extends FrameLayout {
             labelHeight = Math.max(labelHeight, label.getMeasuredHeight());
         }
 
-        int contentWidth = mAddButtonSize + (maxLabelWidth > 0 ? maxLabelWidth + mGap : 0)
+        int contentWidth = mAddButtonSize + (maxLabelWidth > 0 ? maxLabelWidth + mLabelsMargin : 0)
                 + getPaddingLeft() + getPaddingRight();
         if (labelHeight > mActionSize) {
             contentHeight += (labelHeight - mActionSize) * count;
@@ -224,7 +232,7 @@ public class FloatingActionsMenu extends FrameLayout {
         for (int i = 0; i < count; i++) {
             FloatingActionButton action = mActions.get(i);
             TextView label = mActionLabels.get(i);
-            int actionTop = addTop - (i + 1) * (mActionSize + mGap);
+            int actionTop = addTop - (i + 1) * (mActionSize + mActionsSpacing);
             int actionLeft = addLeft + (mAddButtonSize - mActionSize) / 2;
             action.layout(actionLeft, actionTop, actionLeft + mActionSize, actionTop + mActionSize);
 
@@ -232,10 +240,10 @@ public class FloatingActionsMenu extends FrameLayout {
             int labelHeight = label.getMeasuredHeight();
             int labelTop = actionTop + (mActionSize - labelHeight) / 2;
             if (mLabelsPosition == LABELS_ON_LEFT_SIDE) {
-                int labelRight = actionLeft - mGap;
+                int labelRight = actionLeft - mLabelsMargin;
                 label.layout(labelRight - labelWidth, labelTop, labelRight, labelTop + labelHeight);
             } else {
-                int labelLeft = actionLeft + mActionSize + mGap;
+                int labelLeft = actionLeft + mActionSize + mLabelsMargin;
                 label.layout(labelLeft, labelTop, labelLeft + labelWidth, labelTop + labelHeight);
             }
         }

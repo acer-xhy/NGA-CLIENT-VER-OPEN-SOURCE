@@ -98,7 +98,7 @@ public class SeekBarEx extends AppCompatSeekBar {
         mSecondTrackSize = 3 * density;
         mThumbRadius = 8 * density;
         mThumbRadiusOnDragging = 10 * density;
-        mSignTextSize = 12 * getResources().getDisplayMetrics().scaledDensity;
+        mSignTextSize = 14 * getResources().getDisplayMetrics().scaledDensity;
         mSecondTrackColor = 0xFF3F51B5;
         mSignColor = 0xFF3F51B5;
 

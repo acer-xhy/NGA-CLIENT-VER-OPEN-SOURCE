@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <sp.phone.view.widget.NgaSwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,7 +23,7 @@
         </FrameLayout>
 
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </sp.phone.view.widget.NgaSwipeRefreshLayout>
 
 
     <include layout="@layout/list_loading_view" />
