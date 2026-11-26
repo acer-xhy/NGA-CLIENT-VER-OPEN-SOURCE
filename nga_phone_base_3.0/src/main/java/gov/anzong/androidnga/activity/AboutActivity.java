@@ -78,7 +78,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text("检测更新")
                 .setOnClickAction(() -> {
                     ARouterUtils.build(ARouterConstants.ACTIVITY_FRAGMENT_TEMPLATE)
-                            .withString("url", "https://github.com/Justwen/NGA-CLIENT-VER-OPEN-SOURCE/releases")
+                            .withString("url", "https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases")
                             .withString("fragment", WebViewFragment.class.getName())
                             .navigation(this);
 
@@ -113,7 +113,7 @@ public class AboutActivity extends MaterialAboutActivity {
         builder.addItem(new MaterialAboutActionItem.Builder()
                 .text("Github")
                 .subText("bug & 建议")
-                .setOnClickAction(() -> FunctionUtils.openUrlByDefaultBrowser(AboutActivity.this, "https://github.com/Justwen/NGA-CLIENT-VER-OPEN-SOURCE/issues"))
+                .setOnClickAction(() -> FunctionUtils.openUrlByDefaultBrowser(AboutActivity.this, "https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/issues"))
                 .icon(R.drawable.ic_github)
                 .build());
 
