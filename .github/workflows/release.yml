@@ -71,10 +71,18 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "EXPECTED_CODE=$EXPECTED_CODE" >> "$GITHUB_ENV"
 
-      # 本工程 compileSdk=37、compileSdkMinor=1，runner 预装 SDK 不一定有，需要显式安装
+      # 本工程 compileSdk=37、compileSdkMinor=1，runner 预装 SDK 不一定有，需要显式安装；
+      # runner 自带 SDK 但 cmdline-tools 的 bin 不在 PATH，直接用 sdkmanager 会 127
       - name: 准备 Android SDK
         run: |
           set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          BIN="$SDK/cmdline-tools/latest/bin"
+          echo "SDK=$SDK"
+          [ -x "$BIN/sdkmanager" ] || { echo "::error::未找到 sdkmanager：$BIN"; ls -R "$SDK/cmdline-tools" 2>/dev/null || true; exit 1; }
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          export PATH="$BIN:$SDK/platform-tools:$PATH"
           yes | sdkmanager --licenses > /dev/null 2>&1 || true
           sdkmanager --install "platform-tools" > /dev/null
           sdkmanager --install "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
