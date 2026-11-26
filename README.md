@@ -1,63 +1,35 @@
 # NGA 客户端（二次开发分支）
 
-NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-SOURCE](https://github.com/Justwen/NGA-CLIENT-VER-OPEN-SOURCE) 二次开发，用于个人使用与学习。
+NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-SOURCE](https://github.com/Justwen/NGA-CLIENT-VER-OPEN-SOURCE) 二次开发。
 
 > 本仓库是上游的分支，不是上游的发布渠道。F-Droid、Google Play 上架的版本与本仓库构建的产物无关。
 
 ## 与上游的关系
 
-上游的发布分支是 `master_release`（5.1.2 / code 5012），本仓库把它作为唯一的同步来源：从该分支拉取并合并进本地 `master`，`master` 是唯一的开发线与推送目标。
+上游的发布分支是 `master_release`（5.1.2 / code 5012），本仓库把它作为唯一的同步来源：从该分支拉取并合并进本地 `master`，`master` 是唯一的开发线。
 
-| 对比基线 | 上游版本 | 本分支领先 | 文件差异 |
+| 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | 27 个提交 | 428 个文件，+3564 / −1022 |
+| `fork/master_release` | 5.1.2 / code 5012 | **6.0.0 / code 6000** | 领先 27 个提交，428 个文件，+3564 / −1022 |
 
-27 个提交就是本仓库的全部增量，其中 23 个在 5.1.2 之后，前 4 个是本地与发布分支早期的分叉（含 2 个合并提交）。模块划分与上游一致，仍是 13 个 Gradle 模块，改动都发生在模块内部。
+13 个 Gradle 模块与上游一致，改动都发生在模块内部。
 
-## 相对上游的改动
+## 版本
 
-### 工具链：整体升到 AGP 9 一代
+本分支独立编号，从 `6.0.0`（code 6000）起，与上游的 5.1.2 明确区分。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
 
-| | 上游 | 本分支 |
-| --- | --- | --- |
-| Gradle | 8.7 | **9.9.2** |
-| AGP | 8.6.1 | **9.5.2** |
-| Kotlin | 2.1.21 | **2.3.21** |
-| 注解处理 | kapt + annotationProcessor | **KSP 2.3.14** |
-| compileSdk | 36 | **37（minor 1）** |
-| minSdk / targetSdk | 31 / 36 | 31 / 36 |
-| Java 编译目标 | 17 | 17 |
+## 主要变更
 
-AGP 9 内置 Kotlin 支持，模块不再声明 `kotlin-android`；kapt 先迁到 `com.android.legacy-kapt`，随后被 KSP 取代，Room 的注解处理只跑一轮，不再出现 javac 与 kapt 重复处理。
-
-### 依赖与架构
-
-- 关闭 Jetifier（`android.enableJetifier=false`），清除全部 support 时代依赖。
-- 原先依赖 support 时代的三个控件改为项目内自实现：`FloatingActionButton`、`FloatingActionsMenu`、`NgaSwipeRefreshLayout`。
-- 移除 ARouter，改用项目内的 `Router`（位于 `lib_base_common`）；同时清掉 ButterKnife 与 Glide 的注解处理器，`kapt` 完全退场。
-- 消息列表 / 发送 / 详情、账号详情、首页抽屉、板块页等页面为 Compose + Material3 实现，material3 由 1.4.0 升到 1.5.0。
-
-### 构建速度与产物体积
-
-- release 全量构建 552s → 235s；缓存命中后的重建约 68s。
-- R8 与资源压缩同时开启，APK 由 16.8 MB 降到 15.8 MB。新增 `nga_phone_base_3.0/src/main/res/raw/keep.xml`，保护 90 个用 `getIdentifier` 反射取用的板块图标不被裁掉。
-- Gradle 与 Kotlin 守护进程内存分开设定（`-Xmx4g` / `-Xmx3g`），多模块并行时不再互相挤占 metaspace。
-
-### 修复（多为 release 包才暴露的问题）
-
-- R8 混淆导致 suspend 函数返回值被降级，登录态与部分接口返回值异常。
-- 抽屉页用 `ViewModelProvider` 反射实例化 Kotlin `object`，启动即闪退。
-- `UserManager.isActiveAccount` 未实现，进入个人中心崩溃。
-- 消息详情 Paging3 复用 `nextKey`，分页崩溃。
-- 侧边栏头像空白：补加载失败兜底，并恢复头像地址写回。
-- 页面 JSON 直出被截断时改走网页解析，还原为原生数据渲染。
-
-### 功能调整
-
+- 工具链升到 AGP 9 一代：Gradle 9.9.2、AGP 9.5.2、Kotlin 2.3.21、KSP 取代 kapt，compileSdk 37。
+- 清除 support 时代依赖并关闭 Jetifier，三个旧控件改为项目内自实现；ARouter、ButterKnife、Glide 注解处理器全部移除。
+- 消息、账号、首页抽屉、板块页改为 Compose + Material3。
+- release 构建 552s → 235s，APK 16.8 MB → 15.8 MB。
+- 修复仅 release 包才出现的崩溃与数据异常（R8 混淆 suspend 返回值、抽屉反射实例化、Paging 分页、侧边栏头像等）。
 - 全应用强制竖屏，不跟随系统旋转。
-- 帖子内 B 站视频不再以可点击的播放器样式呈现，改为外链卡片；点击优先用 `bilibili://video/<bvid>` 拉起哔哩哔哩 App（`b23.tv` 短链同样处理），未安装时回退浏览器。
-- 首页右上角菜单与左侧抽屉补充「浏览历史」入口，不必先进具体版面才能查看。
-- 点赞 / 踩之后同步刷新楼层赞数。
+- 帖子内 B 站视频改为外链卡片，点击优先拉起哔哩哔哩 App，未安装时回退浏览器。
+- 首页右上角菜单与侧边栏补充「浏览历史」入口。
+
+逐条的代码改动与修复细节见对应版本的 Release 说明。
 
 ## 模块结构
 
@@ -87,8 +59,6 @@ AGP 9 内置 Kotlin 支持，模块不再声明 `kotlin-android`；kapt 先迁�
 - Android SDK Platform 37
 - Gradle 由 wrapper 提供，无需本机安装
 
-命令行构建：
-
 ```powershell
 # release（R8 + 资源压缩，需自备 keystore）
 .\gradlew.bat :nga_phone_base_3.0:assembleRelease
@@ -100,7 +70,7 @@ AGP 9 内置 Kotlin 支持，模块不再声明 `kotlin-android`；kapt 先迁�
 产物：
 
 ```
-nga_phone_base_3.0/build/outputs/apk/release/nga_phone_5.1.2_<MMDDHHmm>.apk
+nga_phone_base_3.0/build/outputs/apk/release/nga_phone_6.0.0_<MMDDHHmm>.apk
 ```
 
 release 使用 `signingConfigs.release`，keystore 路径写在 `nga_phone_base_3.0/build.gradle` 的 `jks_path`（`../keystore/nga.jks`），该文件不在仓库内，构建 release 前需要自备或改这一段配置。
