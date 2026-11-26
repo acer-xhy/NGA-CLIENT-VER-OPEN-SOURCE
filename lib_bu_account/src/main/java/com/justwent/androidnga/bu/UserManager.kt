@@ -204,7 +204,7 @@ object UserManager : IUserManagerService {
         return getCookie(userListLiveData.value!![next])
     }
 
-    fun setAvatarUrl(uid: String, url: String) {
+    override fun setAvatarUrl(uid: String, url: String) {
         userListLiveData.value?.forEach {
             if (it.userId == uid) {
                 if (it.avatarUrl != url) {

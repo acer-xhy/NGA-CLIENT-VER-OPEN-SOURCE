@@ -140,6 +140,7 @@ class NavigationDrawerFragment : BaseComposeFragment() {
                 avatarPainter = rememberAsyncImagePainter(
                     model = user.avatarUrl,
                     placeholder = painterResource(id = R.drawable.drawerdefaulticon),
+                    error = painterResource(id = R.drawable.drawerdefaulticon),
                 )
                 avatarColorFilter = null
             } else {

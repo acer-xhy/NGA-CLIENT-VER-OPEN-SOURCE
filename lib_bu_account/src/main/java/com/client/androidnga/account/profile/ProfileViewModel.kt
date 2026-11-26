@@ -7,6 +7,7 @@ import com.justwen.androidnga.base.router.Router
 import com.client.androidnga.base.api.service.IFilterManagerService
 import com.client.androidnga.base.network.ApiError
 import com.client.androidnga.core.data.html.HtmlData
+import com.client.androidnga.core.parse.ForumParsekUtils
 import com.justwen.androidnga.base.service.api.IUserManagerService
 import gov.anzong.androidnga.base.util.StringUtils
 import gov.anzong.androidnga.common.util.ForumUtils
@@ -71,6 +72,12 @@ class ProfileViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
             .isFilterUser(uid)
         val isCurrentUser = Router.get(IUserManagerService::class.java)
             .isActiveAccount(uid)
+        // 接口返回的 avatar 可能被 HTML 包裹，先解析成纯地址；
+        // 同时写回本地账号信息，避免侧边栏/账号管理页一直使用过期的旧地址
+        val avatar = ForumParsekUtils.parseAvatarUrl(item.avatar) ?: ""
+        if (isCurrentUser && avatar.isNotEmpty()) {
+            Router.get(IUserManagerService::class.java).setAvatarUrl(uid, avatar)
+        }
         val registerDate =
             if (item.regdate > 0) StringUtils.timeStamp2Date1(item.regdate.toString()) else "N/A"
         val muteTime =
@@ -79,7 +86,7 @@ class ProfileViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         return ProfileUiState(
             userName = item.username,
             uid = uid,
-            avatarUrl = item.avatar,
+            avatarUrl = avatar,
             email = item.email,
             posts = item.posts.toString(),
             money = item.money.toString(),
