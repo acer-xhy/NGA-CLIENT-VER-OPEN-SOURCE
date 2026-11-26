@@ -1,6 +1,36 @@
 ext {
     jks_path = '../keystore/nga.jks'
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
+}
+
+// 版本号规则（本仓库唯一约定，以后发版只改这里的 appVersionName）：
+//   versionName = MAJOR.MINOR.PATCH（语义化版本）
+//   versionCode = MAJOR * 1,000,000 + MINOR * 1,000 + PATCH
+//   例：6.0.0 -> 6000000；6.1.0 -> 6001000；6.1.2 -> 6001002
+// 约束：MINOR、PATCH ∈ [0, 999]；versionCode ≤ 2,100,000,000（Google Play 上限）
+// 由 versionName 自动推导，避免两处手改对不上
+def appVersion = '6.0.0'
+
+def versionNameToCode(String versionName) {
+    def matcher = versionName =~ /\A(\d+)\.(\d+)\.(\d+)\z/
+    if (!matcher.matches()) {
+        throw new GradleException("versionName 必须形如 MAJOR.MINOR.PATCH：${versionName}")
+    }
+    int major = matcher.group(1) as int
+    int minor = matcher.group(2) as int
+    int patch = matcher.group(3) as int
+    if (minor > 999 || patch > 999) {
+        throw new GradleException("versionName 的 MINOR/PATCH 不得超过 999：${versionName}")
+    }
+    long code = major * 1_000_000L + minor * 1_000L + patch
+    if (code > 2_100_000_000L) {
+        throw new GradleException("versionCode ${code} 超出 Google Play 上限 2,100,000,000")
+    }
+    return code as int
+}
+
+def appVersionCodeValue = versionNameToCode(appVersion)
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {
@@ -62,8 +92,8 @@ project.ext {
     targetSdkVersion = 36
     compileSdkVersion = 37
     compileSdkMinor = 1
-    appVersionName = '6.0.0'
-    appVersionCode = 6000
+    appVersionName = appVersion
+    appVersionCode = appVersionCodeValue
 
     rxAndroid = '2.1.1'
 

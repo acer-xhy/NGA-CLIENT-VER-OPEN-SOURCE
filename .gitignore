@@ -14,6 +14,11 @@ gradle.properties
 projectFilesBackup/
 nga_phone_base_3.0/release/
 /keystore/nga.jks
+# 签名信息（官方推荐做法：本地 properties 文件，绝不入库）
+/keystore.properties
+keystore.properties
+*.jks
+*.keystore
 
 # Kotlin / Gradle 构建产物
 /.kotlin

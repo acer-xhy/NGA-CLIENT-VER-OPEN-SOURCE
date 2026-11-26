@@ -10,13 +10,20 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **6.0.0 / code 6000** | 领先 27 个提交，428 个文件，+3564 / −1022 |
+| `fork/master_release` | 5.1.2 / code 5012 | **6.0.0 / code 6000000** | 领先 27 个提交，428 个文件，+3564 / −1022 |
 
 13 个 Gradle 模块与上游一致，改动都发生在模块内部。
 
 ## 版本
 
-本分支独立编号，从 `6.0.0`（code 6000）起，与上游的 5.1.2 明确区分。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+本分支独立编号，从 `6.0.0`（code `6000000`）起，与上游的 5.1.2 明确区分。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+
+版本规则（以后发版固定按此执行）：
+
+- `versionName` 用语义化版本 `MAJOR.MINOR.PATCH`
+- `versionCode = MAJOR × 1000000 + MINOR × 1000 + PATCH`，如 `6.0.0 → 6000000`、`6.1.2 → 6001002`
+- `MINOR`、`PATCH` 取 0–999；`versionCode` 不得超过 2,100,000,000（Google Play 上限）
+- 发版只改根 `build.gradle` 的 `appVersion` 一处，`versionCode` 自动推导，格式和范围在配置阶段校验
 
 ## 主要变更
 
@@ -73,7 +80,25 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 nga_phone_base_3.0/build/outputs/apk/release/nga_phone_6.0.0_<MMDDHHmm>.apk
 ```
 
-release 使用 `signingConfigs.release`，keystore 路径写在 `nga_phone_base_3.0/build.gradle` 的 `jks_path`（`../keystore/nga.jks`），该文件不在仓库内，构建 release 前需要自备或改这一段配置。
+## 签名
+
+仓库里不含任何签名凭据（keystore、密码、别名都不入库），`build.gradle` 从外部读取，优先级从高到低：
+
+1. 环境变量：`NGA_STORE_PASSWORD`、`NGA_KEY_ALIAS`、`NGA_KEY_PASSWORD`，`NGA_STORE_FILE` 可选
+2. 项目根 `keystore.properties`（推荐本地开发使用，已在 `.gitignore`）
+3. Gradle 项目属性：`-PstorePassword=...`，或 `~/.gradle/gradle.properties` 里的同名键
+4. `storeFile` 都未指定时回退到根 `build.gradle` 的 `jks_path`（`../keystore/nga.jks`）
+
+本地首次构建 release，在项目根建 `keystore.properties`：
+
+```properties
+storeFile=../keystore/nga.jks
+storePassword=<keystore 密码>
+keyAlias=<key 别名>
+keyPassword=<key 密码>
+```
+
+缺配置时 release 构建会在任务图阶段直接失败并打印上面的配置方法，不会静默产出未签名的包。CI 侧由 GitHub Secrets 注入：`KEYSTORE_BASE64`、`NGA_STORE_PASSWORD`、`NGA_KEY_ALIAS`、`NGA_KEY_PASSWORD`。
 
 ## 许可证
 
