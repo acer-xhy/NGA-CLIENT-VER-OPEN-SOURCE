@@ -72,6 +72,11 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
         google()
         mavenCentral()
+        // jcenter 已停服，个别遗留依赖（net.steamcrafted:load-toast 等）只剩阿里云 public 代理还有，
+        // CI 下放在最后兜底：正常依赖走官方源，只有官方源真的没有才会请求到这里
+        if (System.getenv('CI') == 'true') {
+            maven { url 'https://maven.aliyun.com/repository/public' }
+        }
     }
 
 }
