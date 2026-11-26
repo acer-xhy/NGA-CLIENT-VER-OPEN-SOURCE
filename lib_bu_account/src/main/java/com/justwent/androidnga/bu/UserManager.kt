@@ -146,7 +146,14 @@ object UserManager : IUserManagerService {
     }
 
     override fun isActiveAccount(uid: String, name: String): Boolean {
-        TODO("Not yet implemented")
+        val active = getActiveUser() ?: return false
+        if (uid.isNotEmpty()) {
+            return active.userId == uid
+        }
+        if (name.isNotEmpty()) {
+            return active.nickName == name
+        }
+        return false
     }
 
     fun removeUser(index: Int) {
