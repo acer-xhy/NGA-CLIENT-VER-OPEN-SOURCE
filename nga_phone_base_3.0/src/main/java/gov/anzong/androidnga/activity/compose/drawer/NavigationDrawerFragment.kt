@@ -71,9 +71,9 @@ class NavigationDrawerFragment : BaseComposeFragment() {
         ViewModelProvider(this).get(NavigationDrawerViewModel::class.java)
     }
 
-    private val forumBoardViewModel: ForumBoardViewModel by lazy {
-        ViewModelProvider(this).get(ForumBoardViewModel::class.java)
-    }
+    // ForumBoardViewModel 是 Kotlin object（单例），不能交由 ViewModelProvider 反射实例化，
+    // 否则 release 包会抛 "Cannot create an instance of class ForumBoardViewModel" 导致启动闪退。
+    private val forumBoardViewModel: ForumBoardViewModel = ForumBoardViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
