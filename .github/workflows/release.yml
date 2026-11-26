@@ -26,14 +26,14 @@ jobs:
 
     steps:
       - name: 检出代码（含 tag 与完整历史）
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: true
 
       # 本工程 AGP 9.5.2 / Gradle 9.9.2，本机已用 JVM 25 验证通过；源码 target 仍是 17，不受影响
       - name: 安装 JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -85,12 +85,11 @@ jobs:
           export PATH="$BIN:$SDK/platform-tools:$PATH"
           yes | sdkmanager --licenses > /dev/null 2>&1 || true
           sdkmanager --install "platform-tools" > /dev/null
-          sdkmanager --install "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
-            || sdkmanager --install "platforms;android-37" "build-tools;37.0.0" --channel=3 > /dev/null 2>&1 \
-            || echo "::warning::android-37 安装失败，尝试使用 runner 已有 SDK"
-          # compileSdkMinor=1 需要 37.x 平台包；装不到就让 Gradle 报缺，不掩盖
-          sdkmanager --install "platforms;android-37.1" > /dev/null 2>&1 || echo "android-37.1 包不可用，继续"
-          sdkmanager --list_installed | grep -E "platforms;android-3[5-9]|build-tools;3[5-9]" || true
+          # 本工程 compileSdk=37 + compileSdkMinor=1，真正需要的是 platforms;android-37.1
+          # （SDK 里不存在裸的 platforms;android-37，只有 37.0 / 37.1 / 37.2）
+          sdkmanager --install "platforms;android-37.1" "build-tools;37.0.0" > /dev/null 2>&1 \
+            || echo "::warning::android-37.1 安装失败，尝试使用 runner 已有 SDK"
+          sdkmanager --list_installed | grep -E "platforms;android-3[6-9]|build-tools;3[6-9]" || true
 
       # keystore 不入库（已在 .gitignore），CI 从 secret 还原；密码同样只走 secret，
       # 仓库里的 build.gradle 已不含任何明文凭据
@@ -165,7 +164,7 @@ jobs:
           fi
 
       - name: 备份产物到 Actions
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-${{ github.ref_name }}
           path: |
