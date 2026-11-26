@@ -46,9 +46,12 @@ buildscript {
         rxjava_version = '2.2.21'
     }
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/central' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        // 本地走阿里云镜像加速；CI（GitHub runner）上镜像会返回 502，直接走官方源
+        if (System.getenv('CI') != 'true') {
+            maven { url 'https://maven.aliyun.com/repository/google' }
+            maven { url 'https://maven.aliyun.com/repository/central' }
+            maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        }
         google()
         mavenCentral()
     }
@@ -61,9 +64,11 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        //TODO Remove all dependencies in jcenter
-        maven { url 'https://maven.aliyun.com/repository/public' }
+        if (System.getenv('CI') != 'true') {
+            maven { url 'https://maven.aliyun.com/repository/google' }
+            //TODO Remove all dependencies in jcenter
+            maven { url 'https://maven.aliyun.com/repository/public' }
+        }
         maven { url 'https://www.jitpack.io' }
         google()
         mavenCentral()
