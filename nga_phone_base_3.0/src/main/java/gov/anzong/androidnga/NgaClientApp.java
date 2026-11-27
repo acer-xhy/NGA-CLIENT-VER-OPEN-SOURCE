@@ -8,7 +8,6 @@ import android.os.Process;
 import android.webkit.WebView;
 
 import com.justwen.androidnga.base.network.retrofit.RetrofitHelper;
-import com.justwen.androidnga.cloud.CloudServerManager;
 import com.justwen.androidnga.base.router.LoginGuard;
 import com.justwent.androidnga.bu.UserManager;
 
@@ -63,7 +62,6 @@ public class NgaClientApp extends Application {
         super.onCreate();
 
         // fixWebViewMultiProcessException();
-        CloudServerManager.init(this);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandlerProxy(Thread.getDefaultUncaughtExceptionHandler()));
     }
 

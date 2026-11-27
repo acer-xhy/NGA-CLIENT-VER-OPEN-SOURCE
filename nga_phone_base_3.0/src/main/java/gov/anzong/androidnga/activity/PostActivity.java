@@ -7,8 +7,6 @@ import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
 
-import com.justwen.androidnga.cloud.CloudServerManager;
-
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.arouter.ARouterConstants;
 import sp.phone.param.ParamKey;
@@ -52,9 +50,6 @@ public class PostActivity extends BaseActivity {
     }
 
     private int getTitleResId(String action) {
-        if (action == null) {
-            CloudServerManager.putCrashData(this, "post_intent", getIntent().toString());
-        }
         switch (action) {
             case "reply":
                 return R.string.reply_thread;

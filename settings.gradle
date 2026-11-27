@@ -17,7 +17,6 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
-include ':lib_bu_statistics'
 include ':nga_phone_base_3.0'
 include ':lib_core'
 include ':lib_base_logger'
