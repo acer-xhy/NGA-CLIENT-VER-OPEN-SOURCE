@@ -43,9 +43,17 @@ object ForumBoardRepository {
         } else {
             Files.readFile(dataFile)
         }
-        return JSON.parseArray(
+        val boardList: MutableList<BoardEntity> = JSON.parseArray(
             boardJson, BoardEntity::class.java
         )
+        // board_list.json 只应保存普通板块。历史版本把「我的收藏」节点一起写了进来，
+        // 启动时它会被当成一个额外的顶层板块，导致界面上出现两个「我的收藏」，
+        // 且这个空壳节点里没有任何条目。这里剔除并顺手把脏文件写回干净版本。
+        val cleanedList = boardList.filterNot { it.type == BoardEntity.BoardType.BOOKMARK }
+        if (cleanedList.size != boardList.size) {
+            runCatching { Files.writeFile(dataFile, JSON.toJSONString(cleanedList)) }
+        }
+        return cleanedList.toMutableList()
     }
 
     /**

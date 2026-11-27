@@ -235,8 +235,11 @@ class ForumBoardModel {
             // 只能持久化「顶层板块（含 children）」的层级结构。
             // 历史实现写的是 boardMap.values（扁平化的全部板块），下次启动会被当成顶层 tab 读回，
             // 其中普通板块 children 为 null，导致切 tab 时 ForumBoardView 的 children!! 抛 NPE。
+            // 另外必须排除「我的收藏」节点：它由 board_bookmark.json 单独维护，
+            // 写进本地板块列表会让下次启动多出一个空的收藏 tab。
             ForumBoardRepository.writeLocalBoardList(
-                ContextUtils.getContext(), boardList.toList()
+                ContextUtils.getContext(),
+                boardList.filterNot { it.type == BoardEntity.BoardType.BOOKMARK }
             )
         }
     }
