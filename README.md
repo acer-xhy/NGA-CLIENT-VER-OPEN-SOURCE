@@ -10,9 +10,9 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 45 个提交，448 个文件，+4085 / −1350 |
+| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 46 个提交，448 个文件，+4085 / −1350 |
 
-13 个 Gradle 模块与上游一致，改动都发生在模块内部。
+上游 13 个 Gradle 模块，本仓库 12 个：移除了统计上报模块 `:lib_bu_statistics`，其余 12 个模块名与上游一致，改动都发生在模块内部。
 
 ## 版本
 
@@ -25,12 +25,15 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 - `MINOR`、`PATCH` 取 0–999；`versionCode` 不得超过 2,100,000,000（Google Play 上限）
 - 发版只改根 `build.gradle` 的 `appVersion` 一处，`versionCode` 自动推导，格式和范围在配置阶段校验
 
+> 历史提示：早期试制阶段曾用 `6.0.0`（code `6000000`）编号，该包未对外发布。其 `versionCode` 高于现在的 `1.0.0`（`1000000`），若设备上装过，需先卸载才能安装本版本；此后 `1.x` 内部可正常覆盖升级。
+
 ## 主要变更
 
 - 工具链升到 AGP 9 一代：Gradle 9.9.2、AGP 9.5.2、Kotlin 2.3.21、KSP 取代 kapt，compileSdk 37。
 - 清除 support 时代依赖并关闭 Jetifier，三个旧控件改为项目内自实现；ARouter、ButterKnife、Glide 注解处理器全部移除。
 - 消息、账号、首页抽屉、板块页改为 Compose + Material3。
-- release 构建 552s → 235s，APK 16.8 MB → 15.8 MB。
+- release 构建 552s → 235s，APK 16.8 MB → 14.3 MB（开启 R8 与资源压缩，并整块移除统计 SDK）。
+- 移除 Bugly 与友盟统计（`:lib_bu_statistics` 整个模块删除），包内不再有任何第三方上报。
 - 修复仅 release 包才出现的崩溃与数据异常（R8 混淆 suspend 返回值、抽屉反射实例化、Paging 分页、侧边栏头像等）。
 - 强制竖屏（设置页可关闭，关闭后跟随系统旋转）。
 - 帖子内 B 站视频改为外链卡片，点击优先拉起哔哩哔哩 App，未安装时回退浏览器。
@@ -61,8 +64,8 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 环境要求：
 
-- Android Studio（2026.x 或更新）与 JDK 17 及以上，建议直接用 IDE 自带的 JBR
-- Android SDK Platform 37
+- Android Studio 2026.x 或更新，JDK 17 及以上；实测使用 IDE 自带的 JBR（JDK 25）
+- Android SDK Platform 37（SDK Manager 里显示为 `android-37.1`）、Build-Tools 37.0.0
 - Gradle 由 wrapper 提供，无需本机安装
 
 ```powershell
@@ -98,6 +101,23 @@ keyPassword=<key 密码>
 ```
 
 缺配置时 release 构建会在任务图阶段直接失败并打印上面的配置方法，不会静默产出未签名的包。CI 侧由 GitHub Secrets 注入：`KEYSTORE_BASE64`、`NGA_STORE_PASSWORD`、`NGA_KEY_ALIAS`、`NGA_KEY_PASSWORD`。
+
+## CI 与发版
+
+`.github/workflows/` 下三个流程：
+
+| 文件 | 触发 | 作用 |
+| --- | --- | --- |
+| `build.yml` | 推送 `master`、手动触发 | `assembleDebug` 冒烟，上传 debug 包 artifact |
+| `release.yml` | 推送任意 tag；手动触发 | 校验 tag 与版本号一致 → 还原 keystore → `assembleRelease` → 验产物版本与签名 → 打包 mapping → 创建**草稿** Release（手动触发只构建、不建 Release） |
+| `gradle-wrapper-validation.yml` | 推送、PR | 比对 wrapper jar 的 SHA-256 与 Gradle 官方清单，防止供应链替换 |
+
+发版流程：
+
+1. 改根 `build.gradle` 的 `appVersion`，提交并推送 `master`；
+2. 打 annotated tag（必须与 `appVersion` 完全一致，如 `1.0.0`）并推送；
+3. 等 `release.yml` 跑完，在 Releases 页面核对草稿的产物与说明；
+4. 确认无误后手动 Publish —— 流水线只出草稿，不会自动对外发布。
 
 ## 许可证
 
