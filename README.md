@@ -16,9 +16,9 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 ## 版本
 
-本分支独立编号，与上游的 5.1.2 明确区分。**首个正式版即 `1.0.0`（code `1000000`），自带应用内更新能力**，之后的新版本可以直接在应用内升级，不再依赖浏览器打开 Releases 页面。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+本分支独立编号，与上游的 5.1.2 明确区分。当前版本 `1.0.0`（code `1000000`），自带应用内更新能力，之后的新版本可以直接在应用内升级，不再依赖浏览器打开 Releases 页面。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
 
-关于早前那个 1.0.0：它只是一个未经应用内更新链路的试制包，现已连同 tag、Release 一起撤下。本版与它同一签名、同一 `versionCode`（`1000000`），设备上装过旧包的可直接覆盖安装，无需卸载；此后 `1.x` 共用同一自建签名，内部可正常覆盖升级。
+本仓库各版本共用同一自建签名，`1.x` 内部可直接覆盖升级，无需卸载。
 
 版本规则（以后发版固定按此执行）：
 
@@ -31,7 +31,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 ## 主要变更
 
-- **首个正式版即内置应用内更新**：启动后自动检查本仓库的正式 Release，发现新版本就在应用内下载、校验并拉起安装器覆盖安装；镜像按实测速度自动择优，下载中断可续传，安装前做四项校验。
+- **内置应用内更新**：启动后自动检查本仓库的正式 Release，发现新版本就在应用内下载、校验并拉起安装器覆盖安装；镜像按实测速度自动择优，下载中断可续传，安装前做四项校验。
 - 工具链升到 AGP 9 一代：Gradle 9.9.2、AGP 9.5.2、Kotlin 2.3.21、KSP 取代 kapt，compileSdk 37。
 - 清除 support 时代依赖并关闭 Jetifier，三个旧控件改为项目内自实现；ARouter、ButterKnife、Glide 注解处理器全部移除。
 - 消息、账号、首页抽屉、板块页改为 Compose + Material3。
