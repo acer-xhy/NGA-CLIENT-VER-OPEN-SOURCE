@@ -5,11 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity;
+import com.google.android.material.appbar.AppBarLayout;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem;
 import com.danielstone.materialaboutlibrary.items.MaterialAboutItemOnClickAction;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
@@ -33,6 +43,53 @@ public class AboutActivity extends MaterialAboutActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ThemeManager.getInstance().applyAboutTheme(this);
         super.onCreate(savedInstanceState);
+        setupActionBar();
+    }
+
+    /**
+     * 库自带的布局只有 RecyclerView，而关于页主题是 NoActionBar，
+     * 所以这里自己往 CoordinatorLayout 顶部补一个标题栏和返回按钮。
+     */
+    private void setupActionBar() {
+        ViewGroup content = findViewById(android.R.id.content);
+        if (content == null || content.getChildCount() == 0) {
+            return;
+        }
+        View root = content.getChildAt(0);
+        if (!(root instanceof CoordinatorLayout)) {
+            return;
+        }
+
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) root;
+        AppBarLayout appBarLayout = (AppBarLayout) getLayoutInflater()
+                .inflate(R.layout.about_appbar, coordinatorLayout, false);
+        Toolbar toolbar = appBarLayout.findViewById(R.id.toolbar);
+        CharSequence title = getActivityTitle();
+        toolbar.setTitle(title != null ? title : getString(R.string.title_about));
+        coordinatorLayout.addView(appBarLayout, 0);
+
+        RecyclerView recyclerView = findViewById(com.danielstone.materialaboutlibrary.R.id.mal_recyclerview);
+        if (recyclerView != null) {
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) recyclerView.getLayoutParams();
+            params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+            recyclerView.setLayoutParams(params);
+            final int originalBottomPadding = recyclerView.getPaddingBottom();
+            ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout, (view, windowInsets) -> {
+                Insets statusBars = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+                Insets navigationBars = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                appBarLayout.setPadding(0, statusBars.top, 0, 0);
+                recyclerView.setPadding(recyclerView.getPaddingLeft(), recyclerView.getPaddingTop(),
+                        recyclerView.getPaddingRight(), originalBottomPadding + navigationBars.bottom);
+                return WindowInsetsCompat.CONSUMED;
+            });
+        }
+
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
     }
 
     @Override
