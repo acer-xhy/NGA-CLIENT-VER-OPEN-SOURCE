@@ -31,3 +31,6 @@ nga_phone_base_3.0/src/test/resources/nga_test_account.properties
 
 # 本地审查报告（每轮生成，不入库）
 变更对照_*.html
+
+# 工作空间规则只在本地生效，不入库（避免环境与流程细节随公开仓库外泄）
+AGENTS.md
