@@ -81,11 +81,28 @@ class ForumWebFragment : WebViewFragment() {
                     view.title?.let {
                         setTitle(it)
                     }
+                    fixTopOffset(view)
                     super.onPageFinished(view, url)
                 }
             }
 
         }
+    }
+
+    /**
+     * NGA 网页识别到运行在 App 内置浏览器里时，会给 body 加 notop 类，用固定的负偏移
+     * 把网页自己的顶栏（你好xxx / 登录 / 消息）藏起来。窄视口下这条会换行变高，
+     * 固定负偏移遮不干净，页面顶部就露出一截文字残影。
+     * 这里按元素真实的偏移量补足，让页面从完整位置开始渲染。
+     */
+    private fun fixTopOffset(view: WebView) {
+        view.evaluateJavascript(
+            "(function(){try{var b=document.body,m=document.getElementById('mmc');" +
+                "if(!b||!m||b.className.indexOf('notop')<0){return;}" +
+                "var t=m.getBoundingClientRect().top;" +
+                "if(t<0){m.style.marginTop=(-t)+'px';}}catch(e){}})();",
+            null
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
