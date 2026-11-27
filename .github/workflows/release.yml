@@ -253,3 +253,36 @@ jobs:
 
           cat update.json
           gh release upload "$TAG" update.json --repo "$GITHUB_REPOSITORY" --clobber
+
+      # —— 合规回写：把源码 tag / 提交、安装包大小与 SHA-256 追加进 Release 正文 ——
+      # 放在 update.json 生成之后：客户端展示的 body 只保留版本说明正文，
+      # 校验表只留在 Release 页面，不占客户端弹窗的篇幅。
+      - name: 回写安装包校验信息到 Release 正文
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="$GITHUB_REF_NAME"
+          NAME=$(jq -r .apk.name update.json)
+          SIZE=$(jq -r .apk.size update.json)
+          SHA=$(jq -r .apk.sha256 update.json)
+
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body --jq .body > release-body.md
+          {
+            echo ''
+            echo '---'
+            echo ''
+            echo '### 安装包校验'
+            echo ''
+            echo '| 项 | 值 |'
+            echo '| --- | --- |'
+            echo "| 源码 tag | \`${TAG}\` |"
+            echo "| 源码提交 | \`${GITHUB_SHA:0:12}\` |"
+            echo "| 文件 | \`${NAME}\` |"
+            echo "| 大小 | ${SIZE} 字节 |"
+            echo "| SHA-256 | \`${SHA}\` |"
+            echo ''
+            echo "下载后执行 \`sha256sum ${NAME}\` 与上表比对；同一值也写在 \`update.json\` 的 \`apk.sha256\` 字段，客户端下载后据此做完整性校验。"
+          } >> release-body.md
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file release-body.md

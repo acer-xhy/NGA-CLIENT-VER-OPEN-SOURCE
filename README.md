@@ -116,7 +116,7 @@ keyPassword=<key 密码>
 | 文件 | 触发 | 作用 |
 | --- | --- | --- |
 | `build.yml` | 推送 `master`、手动触发 | `assembleDebug` 冒烟，上传 debug 包 artifact |
-| `release.yml` | 推送任意 tag；手动触发 | 校验 tag 与版本号一致 → 还原 keystore → `assembleRelease` → 验产物版本与签名 → 打包 mapping → 创建**草稿** Release → 生成并上传应用内更新清单 `update.json`（手动触发只构建、不建 Release） |
+| `release.yml` | 推送任意 tag；手动触发 | 校验 tag 与版本号一致 → 还原 keystore → `assembleRelease` → 验产物版本与签名 → 打包 mapping → 创建**草稿** Release → 生成并上传应用内更新清单 `update.json` → 回写源码 tag 与安装包 SHA-256（手动触发只构建、不建 Release） |
 | `gradle-wrapper-validation.yml` | 推送、PR | 比对 wrapper jar 的 SHA-256 与 Gradle 官方清单，防止供应链替换 |
 
 发版流程：
