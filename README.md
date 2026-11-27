@@ -10,13 +10,15 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **1.0.1 / code 1000001** | 领先 51 个提交，455 个文件，+5134 / −1355 |
+| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 52 个提交，456 个文件，+5470 / −1355 |
 
 上游 13 个 Gradle 模块，本仓库 12 个：移除了统计上报模块 `:lib_bu_statistics`，其余 12 个模块名与上游一致，改动都发生在模块内部。
 
 ## 版本
 
-本分支独立编号，从 `1.0.0`（code `1000000`）起，当前 `1.0.1`（code `1000001`），与上游的 5.1.2 明确区分。本仓库各版本共用同一自建签名，`1.x` 内部可直接覆盖升级，无需卸载。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+本分支独立编号，与上游的 5.1.2 明确区分。**首个正式版即 `1.0.0`（code `1000000`），自带应用内更新能力**，之后的新版本可以直接在应用内升级，不再依赖浏览器打开 Releases 页面。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+
+关于早前那个 1.0.0：它只是一个未经应用内更新链路的试制包，现已连同 tag、Release 一起撤下。本版与它同一签名、同一 `versionCode`（`1000000`），设备上装过旧包的可直接覆盖安装，无需卸载；此后 `1.x` 共用同一自建签名，内部可正常覆盖升级。
 
 版本规则（以后发版固定按此执行）：
 
@@ -29,6 +31,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 ## 主要变更
 
+- **首个正式版即内置应用内更新**：启动后自动检查本仓库的正式 Release，发现新版本就在应用内下载、校验并拉起安装器覆盖安装；镜像按实测速度自动择优，下载中断可续传，安装前做四项校验。
 - 工具链升到 AGP 9 一代：Gradle 9.9.2、AGP 9.5.2、Kotlin 2.3.21、KSP 取代 kapt，compileSdk 37。
 - 清除 support 时代依赖并关闭 Jetifier，三个旧控件改为项目内自实现；ARouter、ButterKnife、Glide 注解处理器全部移除。
 - 消息、账号、首页抽屉、板块页改为 Compose + Material3。
@@ -38,7 +41,6 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 - 强制竖屏（设置页可关闭，关闭后跟随系统旋转）。
 - 帖子内 B 站视频改为外链卡片，点击优先拉起哔哩哔哩 App，未安装时回退浏览器。
 - 首页右上角菜单与侧边栏补充「浏览历史」入口。
-- 新增应用内更新：启动后自动检查本仓库的正式 Release，发现新版本即在应用内下载、校验并拉起安装器覆盖安装；镜像按实测速度自动择优，下载中断可续传。
 
 逐条的代码改动与修复细节见对应版本的 Release 说明。
 
@@ -51,6 +53,19 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 - 下载完成后先算 SHA-256，再核对签名证书、包名、versionCode 四项，全部通过才交给系统安装器。镜像由第三方中转，这一步不能省。
 - 未授予「安装未知应用」时引导到系统设置页，返回后自动继续安装，不需要用户再点一次检查更新。
 - 镜像列表写在 `update.json` 里，换线路只改发版脚本即可，已发布的老版本也能拿到新地址。
+
+### 设计来源
+
+「发版流水线随 APK 上传 `update.json`、客户端读 latest 清单自更新」这套交付思路，来自社区分支 [tiger-git2022/nga-client](https://github.com/tiger-git2022/nga-client)，它也有同样的 `update.json` + `assets[]` 清单形式。本实现在该思路基础上重写，并按本仓库的需要做了以下调整：
+
+| 环节 | 来源方案 | 本实现 |
+| --- | --- | --- |
+| 清单位置 | 读 latest 的 `update.json`，避开 api 限流 | 同思路，字段扩展为 `apk{name,size,sha256,url}` + `mirrors[]`，同时兼容旧 `assets[]` 格式 |
+| 下载 | `HttpURLConnection` 手动跟 302，`.part` 落盘再改名 | 同基础做法，增加镜像 Range 测速择优、慢速切换与续传 |
+| 完整性校验 | 主要比对文件大小 | SHA-256 + 签名证书 + 包名 + versionCode 四项校验 |
+| 触发时机 | 启动检查 | 启动后 8 秒检查 + 24 小时节流；「关于」页可手动触发；可跳过指定版本 |
+| 镜像配置 | 写死在客户端 | 由 `update.json` 的 `mirrors[]` 下发，换线路不必重新发版 |
+| 安装 | 拉起系统安装器 | 同，另加「安装未知应用」授权引导与返回后自动续装 |
 
 安装包只带 `arm64-v8a`（`ndk.abiFilters`），x86 设备装不上，属预期行为。
 
@@ -92,7 +107,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 产物：
 
 ```
-nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.1_<MMDDHHmm>.apk
+nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.0_<MMDDHHmm>.apk
 ```
 
 ## 签名
@@ -129,7 +144,7 @@ keyPassword=<key 密码>
 
 1. 在仓库根写 `版本说明_<版本>_<YYYYMMDD>.md`（中文段在前，客户端的「发现新版本」只显示这段），并把根 `build.gradle` 的 `appVersion` 改成同一版本；
 2. 提交并推送 `master`；
-3. 打 annotated tag（必须与 `appVersion` 完全一致，如 `1.0.1`）并推送；
+3. 打 annotated tag（必须与 `appVersion` 完全一致，如 `1.0.0`）并推送；
 4. 等 `release.yml` 跑完，在 Releases 页面核对草稿的产物、说明与 `update.json`；
 5. 确认无误后手动 Publish —— 流水线只出草稿，不会自动对外发布；Publish 之后 `/releases/latest` 才会指向新版本，客户端也才能检查到它。
 
