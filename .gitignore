@@ -28,3 +28,6 @@ hs_err_pid*.log
 replay_pid*.log
 # 单元测试用的临时登录态（含 Cookie，禁止入库）
 nga_phone_base_3.0/src/test/resources/nga_test_account.properties
+
+# 本地审查报告（每轮生成，不入库）
+变更对照_*.html
