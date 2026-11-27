@@ -1,0 +1,34 @@
+NGA 客户端（二次开发分支）
+======================
+
+本仓库基于 NGA-CLIENT-VER-OPEN-SOURCE 二次开发：
+https://github.com/Justwen/NGA-CLIENT-VER-OPEN-SOURCE
+
+版权归属
+--------
+
+原始项目（NGA-CLIENT-VER-OPEN-SOURCE）的版权归 Justwen 及各贡献者所有。
+本分支的修改与新增代码由本仓库维护者贡献。
+
+授权
+----
+
+本项目按 GNU General Public License v2.0 授权分发。
+许可证全文见仓库根目录的 LICENSE 文件，或 https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+本程序为自由软件，按原样提供，不含任何担保；可以依 GPLv2 条款再分发或修改。
+分发本程序的二进制产物（APK）时，须同时提供可获取对应完整源码的途径：本仓库对应版本的
+源码树（与 tag 一一对应）即为该途径。
+
+第三方组件
+----------
+
+本仓库依赖的第三方组件（AndroidX、Material Components、Kotlin、OkHttp、Retrofit、
+Glide、Toasty 等）版权归各自作者所有，分别遵循其各自的许可证。
+完整依赖清单见各模块 build.gradle；具体许可证文本见对应组件的原始仓库或随附声明。
+
+商标
+----
+
+"NGA" 及相关名称、标识归其权利人所有。本仓库为非官方第三方客户端，与 NGA 官方、
+Justwen 官方发行渠道（Google Play、F-Droid）均无隶属关系。

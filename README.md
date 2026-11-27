@@ -121,4 +121,6 @@ keyPassword=<key 密码>
 
 ## 许可证
 
-GPLv2，沿用上游。
+本项目按 GNU General Public License v2.0 发布，许可证全文见 [LICENSE](LICENSE)。
+
+原始项目 [NGA-CLIENT-VER-OPEN-SOURCE](https://github.com/Justwen/NGA-CLIENT-VER-OPEN-SOURCE) 的版权归 Justwen 及各贡献者所有；本分支的修改与新增代码由本仓库维护者贡献，同样以 GPLv2 授权分发。第三方组件（AndroidX、Kotlin、OkHttp 等）分别遵循其各自许可证，归属与说明见 [NOTICE](NOTICE)。
