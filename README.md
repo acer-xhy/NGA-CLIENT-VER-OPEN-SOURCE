@@ -10,13 +10,13 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 49 个提交，449 个文件，约 +4130 / −1350 |
+| `fork/master_release` | 5.1.2 / code 5012 | **1.0.1 / code 1000001** | 领先 51 个提交，455 个文件，+5134 / −1355 |
 
 上游 13 个 Gradle 模块，本仓库 12 个：移除了统计上报模块 `:lib_bu_statistics`，其余 12 个模块名与上游一致，改动都发生在模块内部。
 
 ## 版本
 
-本分支独立编号，从 `1.0.0`（code `1000000`）起，与上游的 5.1.2 明确区分。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+本分支独立编号，从 `1.0.0`（code `1000000`）起，当前 `1.0.1`（code `1000001`），与上游的 5.1.2 明确区分。本仓库各版本共用同一自建签名，`1.x` 内部可直接覆盖升级，无需卸载。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
 
 版本规则（以后发版固定按此执行）：
 
@@ -38,8 +38,21 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 - 强制竖屏（设置页可关闭，关闭后跟随系统旋转）。
 - 帖子内 B 站视频改为外链卡片，点击优先拉起哔哩哔哩 App，未安装时回退浏览器。
 - 首页右上角菜单与侧边栏补充「浏览历史」入口。
+- 新增应用内更新：启动后自动检查本仓库的正式 Release，发现新版本即在应用内下载、校验并拉起安装器覆盖安装；镜像按实测速度自动择优，下载中断可续传。
 
 逐条的代码改动与修复细节见对应版本的 Release 说明。
+
+## 应用内更新
+
+客户端启动 8 秒后检查一次，每 24 小时最多一次；「关于 → 检测更新」可随时手动触发。检查对象只指向本仓库的正式 Release，草稿与 prerelease 一律跳过。
+
+- 清单 `update.json` 由发版流水线随 APK 一起上传到 Release，客户端从 `/releases/latest/download/update.json` 读取。走普通下载通道，不调 `api.github.com`（该接口限流 60 次/小时/IP），`/releases/latest` 也天然只指向已发布的正式版。
+- 国内直连 GitHub 资产实测只有十几 KB/s。下载前对清单里下发的镜像（默认 `gh-proxy.com`、`ghfast.top`、`gh-proxy.org`）做 Range 探测，挑最快的一条；传输中连续 8 秒低于 25 KB/s 且剩余超过 2 MB 就换通道，并从已写入的字节处续传。
+- 下载完成后先算 SHA-256，再核对签名证书、包名、versionCode 四项，全部通过才交给系统安装器。镜像由第三方中转，这一步不能省。
+- 未授予「安装未知应用」时引导到系统设置页，返回后自动继续安装，不需要用户再点一次检查更新。
+- 镜像列表写在 `update.json` 里，换线路只改发版脚本即可，已发布的老版本也能拿到新地址。
+
+安装包只带 `arm64-v8a`（`ndk.abiFilters`），x86 设备装不上，属预期行为。
 
 ## 模块结构
 
@@ -79,7 +92,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 产物：
 
 ```
-nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.0_<MMDDHHmm>.apk
+nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.1_<MMDDHHmm>.apk
 ```
 
 ## 签名
@@ -109,15 +122,16 @@ keyPassword=<key 密码>
 | 文件 | 触发 | 作用 |
 | --- | --- | --- |
 | `build.yml` | 推送 `master`、手动触发 | `assembleDebug` 冒烟，上传 debug 包 artifact |
-| `release.yml` | 推送任意 tag；手动触发 | 校验 tag 与版本号一致 → 还原 keystore → `assembleRelease` → 验产物版本与签名 → 打包 mapping → 创建**草稿** Release（手动触发只构建、不建 Release） |
+| `release.yml` | 推送任意 tag；手动触发 | 校验 tag 与版本号一致 → 还原 keystore → `assembleRelease` → 验产物版本与签名 → 打包 mapping → 创建**草稿** Release → 生成并上传应用内更新清单 `update.json`（手动触发只构建、不建 Release） |
 | `gradle-wrapper-validation.yml` | 推送、PR | 比对 wrapper jar 的 SHA-256 与 Gradle 官方清单，防止供应链替换 |
 
 发版流程：
 
-1. 改根 `build.gradle` 的 `appVersion`，提交并推送 `master`；
-2. 打 annotated tag（必须与 `appVersion` 完全一致，如 `1.0.0`）并推送；
-3. 等 `release.yml` 跑完，在 Releases 页面核对草稿的产物与说明；
-4. 确认无误后手动 Publish —— 流水线只出草稿，不会自动对外发布。
+1. 在仓库根写 `版本说明_<版本>_<YYYYMMDD>.md`（中文段在前，客户端的「发现新版本」只显示这段），并把根 `build.gradle` 的 `appVersion` 改成同一版本；
+2. 提交并推送 `master`；
+3. 打 annotated tag（必须与 `appVersion` 完全一致，如 `1.0.1`）并推送；
+4. 等 `release.yml` 跑完，在 Releases 页面核对草稿的产物、说明与 `update.json`；
+5. 确认无误后手动 Publish —— 流水线只出草稿，不会自动对外发布；Publish 之后 `/releases/latest` 才会指向新版本，客户端也才能检查到它。
 
 ## 许可证
 

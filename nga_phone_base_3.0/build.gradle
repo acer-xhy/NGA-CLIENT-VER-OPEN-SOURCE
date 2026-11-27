@@ -74,6 +74,10 @@ android {
         versionCode project.appVersionCode
         versionName project.appVersionName
 
+        // 应用内更新读取的仓库路径，Release 里拼成
+        // https://github.com/<UPDATE_REPO>/releases/latest/download/update.json
+        buildConfigField "String", "UPDATE_REPO", '"acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE"'
+
         ndk {
             abiFilters 'arm64-v8a'
         }
@@ -94,6 +98,8 @@ android {
             pseudoLocalesEnabled false
             minifyEnabled true
             shrinkResources true
+            // 只有正式包才检查更新：debug 包与线上包名、签名都不同，装了也不能覆盖
+            buildConfigField "boolean", "UPDATE_ENABLED", "true"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             zipAlignEnabled true
             if (signingReady) {
@@ -104,6 +110,7 @@ android {
             applicationIdSuffix '.debug'
             debuggable true
             minifyEnabled false
+            buildConfigField "boolean", "UPDATE_ENABLED", "false"
         }
     }
 

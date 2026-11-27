@@ -19,6 +19,8 @@ import com.justwen.androidnga.ui.fragment.WebViewFragment;
 
 import gov.anzong.androidnga.BuildConfig;
 import gov.anzong.androidnga.R;
+import sp.phone.common.UpdateChecker;
+import sp.phone.common.UpdateDownloader;
 import sp.phone.theme.ThemeManager;
 import sp.phone.ui.fragment.dialog.VersionUpgradeDialogFragment;
 import sp.phone.util.ARouterUtils;
@@ -30,6 +32,12 @@ public class AboutActivity extends MaterialAboutActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ThemeManager.getInstance().applyAboutTheme(this);
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        UpdateDownloader.tryResumePendingInstall(this);
     }
 
     @NonNull
@@ -76,13 +84,7 @@ public class AboutActivity extends MaterialAboutActivity {
 
         builder.addItem(new MaterialAboutActionItem.Builder()
                 .text("检测更新")
-                .setOnClickAction(() -> {
-                    ARouterUtils.build(ARouterConstants.ACTIVITY_FRAGMENT_TEMPLATE)
-                            .withString("url", "https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases")
-                            .withString("fragment", WebViewFragment.class.getName())
-                            .navigation(this);
-
-                })
+                .setOnClickAction(() -> UpdateChecker.check(this, true))
                 .icon(R.drawable.ic_update_24dp)
                 .build());
 

@@ -110,4 +110,10 @@ public class PreferenceKey {
 
     public static final String USER_AGENT = "preference_key_ua";
 
+    /** 上一次成功拉取 update.json 的时间戳，用于 24 小时节流 */
+    public static final String KEY_UPDATE_LAST_CHECK = "key_update_last_check";
+
+    /** 用户点了「稍后」的 versionCode，自动检查时不再重复弹同一个版本 */
+    public static final String KEY_UPDATE_SKIP_VERSION = "key_update_skip_version";
+
 }

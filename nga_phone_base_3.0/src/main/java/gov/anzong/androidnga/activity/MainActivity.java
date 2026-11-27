@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.EdgeToEdge;
@@ -16,6 +18,8 @@ import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.activity.compose.drawer.NavigationDrawerFragment;
 import gov.anzong.androidnga.base.util.PermissionUtils;
 import gov.anzong.androidnga.base.util.ThemeUtils;
+import sp.phone.common.UpdateChecker;
+import sp.phone.common.UpdateDownloader;
 import sp.phone.theme.ThemeManager;
 import sp.phone.ui.fragment.dialog.VersionUpgradeDialogFragment;
 import sp.phone.util.ActivityUtils;
@@ -33,6 +37,8 @@ public class MainActivity extends BaseActivity {
         ThemeUtils.init(this);
         checkPermission();
         checkNewVersion();
+        // 延迟检查更新：24 小时内只查一次，避开首屏
+        new Handler(Looper.getMainLooper()).postDelayed(() -> UpdateChecker.checkIfDue(this), 8000);
         initView();
         mIsNightMode = ThemeManager.getInstance().isNightMode();
         setTitle(R.string.start_title);
@@ -70,6 +76,8 @@ public class MainActivity extends BaseActivity {
             startActivity(getIntent());
         }
         super.onResume();
+        // 从「安装未知应用」设置页返回后自动继续安装
+        UpdateDownloader.tryResumePendingInstall(this);
     }
 
     private void initView() {

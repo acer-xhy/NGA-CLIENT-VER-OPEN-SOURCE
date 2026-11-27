@@ -193,7 +193,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          ARGS=("$GITHUB_REF_NAME" "$APK" --verify-tag --generate-notes --title "NGA ${VERSION}")
+          ARGS=("$GITHUB_REF_NAME" "$APK" --verify-tag --title "NGA ${VERSION}")
+          # 版本说明优先用仓库里手写的文件（中文段会被客户端 update.json 原样展示），
+          # 没有对应文件时才回退 GitHub 自动生成的 PR/提交摘要
+          NOTES=$(ls 版本说明_"${VERSION}"_*.md 2>/dev/null | head -1 || true)
+          if [ -n "$NOTES" ]; then
+            echo "使用版本说明文件：$NOTES"
+            ARGS+=(--notes-file "$NOTES")
+          else
+            echo "::warning::未找到 版本说明_${VERSION}_*.md，回退 --generate-notes"
+            ARGS+=(--generate-notes)
+          fi
           # 注意：set -e 下不能用 "[ cond ] && cmd"，条件为假会让整个 step 退出，必须用 if
           if [ "$DRAFT" = "true" ]; then ARGS+=(--draft); fi
           if [ -n "${MAPPING_ZIP:-}" ]; then ARGS+=("$MAPPING_ZIP"); fi
@@ -201,3 +211,45 @@ jobs:
           echo "gh release create ${ARGS[*]}"
           gh release create "${ARGS[@]}"
           gh release view "$GITHUB_REF_NAME" --json name,isDraft,assets
+
+      # —— 应用内更新清单 ——
+      # 客户端读 /releases/latest/download/update.json，走普通下载通道，
+      # 不调 api.github.com（那里限流 60 次/小时/IP）；latest 天然只指向正式发布版，
+      # 草稿阶段文件已经在资产里，但 Publish 之后客户端才能读到。
+      # sha256/size 用于下载后校验（下载会走第三方镜像，必须防篡改/截断）；
+      # mirrors 由服务端下发，镜像换了不用重新发版。
+      - name: 生成应用内更新清单 update.json
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="$GITHUB_REF_NAME"
+          APK_NAME=$(basename "$APK")
+          APK_SIZE=$(stat -c%s "$APK")
+          APK_SHA=$(sha256sum "$APK" | awk '{print $1}')
+          BODY=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body --jq .body)
+
+          jq -n \
+            --arg tag "$TAG" \
+            --arg name "$VERSION" \
+            --argjson code "$EXPECTED_CODE" \
+            --arg body "$BODY" \
+            --arg html "https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}" \
+            --arg apkName "$APK_NAME" \
+            --argjson apkSize "$APK_SIZE" \
+            --arg apkSha "$APK_SHA" \
+            --arg apkUrl "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${APK_NAME}" \
+            '{
+              tag_name: $tag,
+              version_name: $name,
+              version_code: $code,
+              body: $body,
+              html_url: $html,
+              prerelease: false,
+              apk: { name: $apkName, size: $apkSize, sha256: $apkSha, url: $apkUrl },
+              mirrors: ["https://gh-proxy.com/", "https://ghfast.top/", "https://gh-proxy.org/"]
+            }' > update.json
+
+          cat update.json
+          gh release upload "$TAG" update.json --repo "$GITHUB_REPOSITORY" --clobber
