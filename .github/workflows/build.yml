@@ -3,7 +3,7 @@ name: Build Artifacts
 # 日常分支构建：只出 debug 包做冒烟验证，不涉及签名与发布
 on:
   push:
-    branches: [ master, build-test ]
+    branches: [ master ]
   workflow_dispatch:
 
 permissions:
