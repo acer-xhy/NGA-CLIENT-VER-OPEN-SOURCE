@@ -10,18 +10,18 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **6.0.0 / code 6000000** | 领先 27 个提交，428 个文件，+3564 / −1022 |
+| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 45 个提交，448 个文件，+4085 / −1350 |
 
 13 个 Gradle 模块与上游一致，改动都发生在模块内部。
 
 ## 版本
 
-本分支独立编号，从 `6.0.0`（code `6000000`）起，与上游的 5.1.2 明确区分。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+本分支独立编号，从 `1.0.0`（code `1000000`）起，与上游的 5.1.2 明确区分。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
 
 版本规则（以后发版固定按此执行）：
 
 - `versionName` 用语义化版本 `MAJOR.MINOR.PATCH`
-- `versionCode = MAJOR × 1000000 + MINOR × 1000 + PATCH`，如 `6.0.0 → 6000000`、`6.1.2 → 6001002`
+- `versionCode = MAJOR × 1000000 + MINOR × 1000 + PATCH`，如 `1.0.0 → 1000000`、`1.1.2 → 1001002`
 - `MINOR`、`PATCH` 取 0–999；`versionCode` 不得超过 2,100,000,000（Google Play 上限）
 - 发版只改根 `build.gradle` 的 `appVersion` 一处，`versionCode` 自动推导，格式和范围在配置阶段校验
 
@@ -76,7 +76,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 产物：
 
 ```
-nga_phone_base_3.0/build/outputs/apk/release/nga_phone_6.0.0_<MMDDHHmm>.apk
+nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.0_<MMDDHHmm>.apk
 ```
 
 ## 签名
