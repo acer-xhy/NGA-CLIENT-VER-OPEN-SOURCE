@@ -116,4 +116,10 @@ public class PreferenceKey {
     /** 用户点了「稍后」的 versionCode，自动检查时不再重复弹同一个版本 */
     public static final String KEY_UPDATE_SKIP_VERSION = "key_update_skip_version";
 
+    /**
+     * 竞速选出的最快通道：存镜像前缀（如 https://gh-proxy.com/），
+     * 特殊值 direct 表示 GitHub 直连；删除即恢复“每次重新选”
+     */
+    public static final String KEY_UPDATE_ENDPOINT = "key_update_endpoint";
+
 }

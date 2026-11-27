@@ -10,13 +10,13 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 52 个提交，456 个文件，+5470 / −1355 |
+| `fork/master_release` | 5.1.2 / code 5012 | **1.0.1 / code 1000001** | 领先 55 个提交，457 个文件，+5691 / −1354 |
 
 上游 13 个 Gradle 模块，本仓库 12 个：移除了统计上报模块 `:lib_bu_statistics`，其余 12 个模块名与上游一致，改动都发生在模块内部。
 
 ## 版本
 
-本分支独立编号，与上游的 5.1.2 明确区分。当前版本 `1.0.0`（code `1000000`），自带应用内更新能力，之后的新版本可以直接在应用内升级，不再依赖浏览器打开 Releases 页面。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
+本分支独立编号，与上游的 5.1.2 明确区分。当前版本 `1.0.1`（code `1000001`），自带应用内更新能力，之后的新版本可以直接在应用内升级，不再依赖浏览器打开 Releases 页面。安装包见 [Releases](https://github.com/acer-xhy/NGA-CLIENT-VER-OPEN-SOURCE/releases)。
 
 本仓库各版本共用同一自建签名，`1.x` 内部可直接覆盖升级，无需卸载。
 
@@ -32,6 +32,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 ## 主要变更
 
 - **内置应用内更新**：启动后自动检查本仓库的正式 Release，发现新版本就在应用内下载、校验并拉起安装器覆盖安装；镜像按实测速度自动择优，下载中断可续传，安装前做四项校验。
+- **检测更新并发选线**：首次检查时把直链与三个镜像同时发起，取最先返回的一条记为默认线路，后续只发单个请求。国内裸网直连 GitHub 会静默丢包，串行方案每次都要等满 6 秒超时，实测一次检查 8–9 秒；改为并发后 2.3 秒左右。「关于」页可清理线路记忆与已下载的安装包。
 - 工具链升到 AGP 9 一代：Gradle 9.9.2、AGP 9.5.2、Kotlin 2.3.21、KSP 取代 kapt，compileSdk 37。
 - 清除 support 时代依赖并关闭 Jetifier，三个旧控件改为项目内自实现；ARouter、ButterKnife、Glide 注解处理器全部移除。
 - 消息、账号、首页抽屉、板块页改为 Compose + Material3。
@@ -49,6 +50,8 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 客户端启动 8 秒后检查一次，每 24 小时最多一次；「关于 → 检测更新」可随时手动触发。检查对象只指向本仓库的正式 Release，草稿与 prerelease 一律跳过。
 
 - 清单 `update.json` 由发版流水线随 APK 一起上传到 Release，客户端从 `/releases/latest/download/update.json` 读取。走普通下载通道，不调 `api.github.com`（该接口限流 60 次/小时/IP），`/releases/latest` 也天然只指向已发布的正式版。
+- 取清单走并发选线：记住过最快线路就单发该线路，没有记录或该线路不通时，直链与三个镜像同时发起、取最先成功的记为默认。国内裸网直连 GitHub 会静默丢包，串行尝试每次都要空等 6 秒超时。
+- 「关于 → 清理更新缓存」会清掉默认线路记忆、24 小时检查时间戳、「稍后」跳过的版本号，以及 `cacheDir/update/` 下已下载的安装包与 `.part` 文件；清理后下一次检查重新选线。
 - 国内直连 GitHub 资产实测只有十几 KB/s。下载前对清单里下发的镜像（默认 `gh-proxy.com`、`ghfast.top`、`gh-proxy.org`）做 Range 探测，挑最快的一条；传输中连续 8 秒低于 25 KB/s 且剩余超过 2 MB 就换通道，并从已写入的字节处续传。
 - 下载完成后先算 SHA-256，再核对签名证书、包名、versionCode 四项，全部通过才交给系统安装器。镜像由第三方中转，这一步不能省。
 - 未授予「安装未知应用」时引导到系统设置页，返回后自动继续安装，不需要用户再点一次检查更新。
@@ -61,6 +64,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 | 环节 | 来源方案 | 本实现 |
 | --- | --- | --- |
 | 清单位置 | 读 latest 的 `update.json`，避开 api 限流 | 同思路，字段扩展为 `apk{name,size,sha256,url}` + `mirrors[]`，同时兼容旧 `assets[]` 格式 |
+| 清单取用 | 串行尝试地址 | 并发竞速取最快通道并记忆复用，可按需清理 |
 | 下载 | `HttpURLConnection` 手动跟 302，`.part` 落盘再改名 | 同基础做法，增加镜像 Range 测速择优、慢速切换与续传 |
 | 完整性校验 | 主要比对文件大小 | SHA-256 + 签名证书 + 包名 + versionCode 四项校验 |
 | 触发时机 | 启动检查 | 启动后 8 秒检查 + 24 小时节流；「关于」页可手动触发；可跳过指定版本 |
@@ -107,7 +111,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 产物：
 
 ```
-nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.0_<MMDDHHmm>.apk
+nga_phone_base_3.0/build/outputs/apk/release/nga_phone_1.0.1_<MMDDHHmm>.apk
 ```
 
 ## 签名

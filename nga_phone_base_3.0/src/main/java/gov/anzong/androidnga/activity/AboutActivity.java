@@ -25,6 +25,7 @@ import sp.phone.theme.ThemeManager;
 import sp.phone.ui.fragment.dialog.VersionUpgradeDialogFragment;
 import sp.phone.util.ARouterUtils;
 import sp.phone.util.FunctionUtils;
+import gov.anzong.androidnga.util.ToastUtils;
 
 public class AboutActivity extends MaterialAboutActivity {
 
@@ -86,6 +87,17 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text("检测更新")
                 .setOnClickAction(() -> UpdateChecker.check(this, true))
                 .icon(R.drawable.ic_update_24dp)
+                .build());
+
+        builder.addItem(new MaterialAboutActionItem.Builder()
+                .text("清理更新缓存")
+                .subText("当前线路：" + UpdateChecker.endpointLabel())
+                .setOnClickAction(() -> {
+                    UpdateChecker.clearCache(this);
+                    ToastUtils.showToast("已清理更新缓存，线路记忆已重置");
+                    recreate();
+                })
+                .icon(R.drawable.ic_clear_accent_24dp)
                 .build());
 
         return builder.build();
