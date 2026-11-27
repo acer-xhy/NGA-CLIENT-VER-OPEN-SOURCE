@@ -10,7 +10,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 
 | 对比基线 | 上游 | 本分支 | 差异 |
 | --- | --- | --- | --- |
-| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 46 个提交，448 个文件，+4085 / −1350 |
+| `fork/master_release` | 5.1.2 / code 5012 | **1.0.0 / code 1000000** | 领先 49 个提交，449 个文件，约 +4130 / −1350 |
 
 上游 13 个 Gradle 模块，本仓库 12 个：移除了统计上报模块 `:lib_bu_statistics`，其余 12 个模块名与上游一致，改动都发生在模块内部。
 
@@ -32,7 +32,7 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 - 工具链升到 AGP 9 一代：Gradle 9.9.2、AGP 9.5.2、Kotlin 2.3.21、KSP 取代 kapt，compileSdk 37。
 - 清除 support 时代依赖并关闭 Jetifier，三个旧控件改为项目内自实现；ARouter、ButterKnife、Glide 注解处理器全部移除。
 - 消息、账号、首页抽屉、板块页改为 Compose + Material3。
-- release 构建 552s → 235s，APK 16.8 MB → 14.3 MB（开启 R8 与资源压缩，并整块移除统计 SDK）。
+- release 构建 552s → 235s（本地冷构建；CI 发版流水线实测约 2m48s），APK 16.8 MB → 14.3 MB（开启 R8 与资源压缩，并整块移除统计 SDK）。
 - 移除 Bugly 与友盟统计（`:lib_bu_statistics` 整个模块删除），包内不再有任何第三方上报。
 - 修复仅 release 包才出现的崩溃与数据异常（R8 混淆 suspend 返回值、抽屉反射实例化、Paging 分页、侧边栏头像等）。
 - 强制竖屏（设置页可关闭，关闭后跟随系统旋转）。
