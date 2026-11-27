@@ -53,7 +53,6 @@ NGA 论坛的第三方 Android 客户端，基于 [Justwen/NGA-CLIENT-VER-OPEN-S
 | `:lib_base_logger` | 日志 |
 | `:lib_bu_account` | 账号登录、用户信息 |
 | `:lib_bu_message` | 私信 / 消息 |
-| `:lib_bu_statistics` | 统计上报 |
 | `:lib_module_debug` | 调试入口 |
 
 包名沿用历史遗留的多个前缀（`gov.anzong.androidnga`、`sp.phone`、`com.justwen.androidnga`、`com.client.androidnga`），未做统一。

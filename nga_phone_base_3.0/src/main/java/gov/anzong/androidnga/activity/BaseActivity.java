@@ -24,8 +24,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import gov.anzong.androidnga.R;
 import gov.anzong.androidnga.base.util.ContextUtils;
-import gov.anzong.androidnga.base.util.PreferenceUtils;
-import gov.anzong.androidnga.common.PreferenceKey;
 import sp.phone.common.NotificationController;
 import sp.phone.common.PhoneConfiguration;
 import sp.phone.theme.ThemeManager;
@@ -200,18 +198,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        checkUpgrade();
         NotificationController.getInstance().checkNotificationDelay();
         super.onResume();
-    }
-
-    private void checkUpgrade() {
-        if (PreferenceUtils.getData(PreferenceKey.KEY_CHECK_UPGRADE_STATE, true)) {
-            long time = PreferenceUtils.getData(PreferenceKey.KEY_CHECK_UPGRADE_TIME, 0L);
-            if (System.currentTimeMillis() - time > 1000 * 60 * 60 * 24) {
-                PreferenceUtils.putData(PreferenceKey.KEY_CHECK_UPGRADE_TIME, System.currentTimeMillis());
-            }
-        }
     }
 
     @Override

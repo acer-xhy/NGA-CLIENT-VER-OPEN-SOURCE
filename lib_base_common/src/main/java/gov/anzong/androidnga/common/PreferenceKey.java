@@ -72,10 +72,6 @@ public class PreferenceKey {
 
     public static final String KEY_USE_SOLID_COLOR_BG = "use_solid_color_bg";
 
-    public static final String KEY_CHECK_UPGRADE_STATE = "key_check_upgrade_state";
-
-    public static final String KEY_CHECK_UPGRADE_TIME = "key_check_upgrade_time";
-
     public static final String KEY_NIGHT_MODE_FOLLOW_SYSTEM = "key_night_mode_follow_system";
 
     public static final String VERSION_MAJOR_CODE = "version_major_code";
