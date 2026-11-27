@@ -68,10 +68,16 @@ object UserManager : IUserManagerService {
     }
 
     public fun setActiveIndex(index: Int) {
+        val changed = activeIndexLiveData.value != index
         activeIndexLiveData.value = index
         activeUser = userListLiveData.value!![index]
         _accountState.value = index
         PreferenceUtils.putData(PreferenceKey.USER_ACTIVE_INDEX, index)
+        if (changed) {
+            // 账号切换后，内置浏览器里还是上一个账号的 cookie，同步成当前账号
+            NgaWebCookie.clear()
+            NgaWebCookie.sync()
+        }
     }
 
     fun toggleUser(isNext: Boolean): Int {
@@ -159,6 +165,7 @@ object UserManager : IUserManagerService {
     fun removeUser(index: Int) {
         val userList = userListLiveData.value!!.toMutableList()
         val user = userList.removeAt(index)
+        val removedActiveUser = activeUser?.userId == user.userId
         var activeIndex = activeIndexLiveData.value!!
         if (activeIndex >= index) {
             activeIndex -= 1
@@ -167,16 +174,27 @@ object UserManager : IUserManagerService {
         if (activeIndex >= userList.size || activeIndex < 0) {
             activeIndex = 0
         }
+
+        // 先更新列表，setActiveIndex 才能取到正确的账号（否则删除最后一个账号时会越界）
+        userListLiveData.value = userList
+
         if (userList.isEmpty()) {
             activeUser = null
             activeIndex = 0
             activeIndexLiveData.value = 0
             _accountState.value = 0
             PreferenceUtils.putData(PreferenceKey.USER_ACTIVE_INDEX, activeIndex)
+            // 所有账号都没了，内置浏览器里不能留着已注销账号的 cookie
+            NgaWebCookie.clear()
         } else {
             setActiveIndex(activeIndex)
         }
-        userListLiveData.value = userList
+        if (removedActiveUser && userList.isNotEmpty()) {
+            // 被删的正是当前账号：setActiveIndex 内部已按新账号重写 cookie，
+            // 这里只需确保旧账号在其它域名下的残留也被清掉
+            NgaWebCookie.clear()
+            NgaWebCookie.sync()
+        }
         ThreadProvider.runOnSingleThread {
             AppDatabase.getInstance().userDao().removeUsers(user)
         }

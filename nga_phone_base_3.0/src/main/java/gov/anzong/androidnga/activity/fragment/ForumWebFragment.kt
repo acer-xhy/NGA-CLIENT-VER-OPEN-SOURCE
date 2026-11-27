@@ -9,13 +9,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.view.MenuProvider
 import com.justwen.androidnga.ui.fragment.WebViewFragment
-import com.justwent.androidnga.bu.UserManager
+import com.justwent.androidnga.bu.NgaWebCookie
 import gov.anzong.androidnga.R
 
 class ForumWebFragment : WebViewFragment() {
@@ -50,7 +49,10 @@ class ForumWebFragment : WebViewFragment() {
 
     private fun initWebView() {
         webView?.apply {
-            syncLoginCookieToNgaDomains()
+            // App 已登录时把账号 cookie 写进 NGA 各域名，网页版打开即登录态。
+            // 登录页走 ngabbs.com、浏览域是 bbs.nga.cn，跨注册域 cookie 不共享，
+            // 不写这一步新设备首次进网页版还要再登录一次。
+            NgaWebCookie.sync()
 
             val webSettings = settings
             webSettings.javaScriptEnabled = true
@@ -91,31 +93,6 @@ class ForumWebFragment : WebViewFragment() {
             }
 
         }
-    }
-
-    /**
-     * App 内部已经登录，但登录页固定走 ngabbs.com，而浏览默认走 bbs.nga.cn。
-     * 这是两个不同的注册域，WebView 的 cookie 不会跨域共享，所以新设备第一次
-     * 进网页版还得再登录一次。这里把 App 已保存的账号 cookie 主动写进所有 NGA 域名，
-     * 网页版打开就是登录态，省掉那一步。
-     */
-    private fun syncLoginCookieToNgaDomains() {
-        val cookie = UserManager.getCookie()
-        if (cookie.isEmpty()) {
-            return
-        }
-        val cookieManager = CookieManager.getInstance()
-        cookieManager.setAcceptCookie(true)
-        val hosts = resources.getStringArray(gov.anzong.androidnga.common.R.array.nga_domain_no_http)
-        for (host in hosts) {
-            for (item in cookie.split(";")) {
-                val pair = item.trim()
-                if (pair.isNotEmpty()) {
-                    cookieManager.setCookie("https://$host", "$pair; Path=/")
-                }
-            }
-        }
-        cookieManager.flush()
     }
 
     /**
